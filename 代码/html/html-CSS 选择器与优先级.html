@@ -1,0 +1,43 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS选择器</title>
+    <style>
+        /* 通配符选择器：* 代表所有标签。用于清除浏览器默认的内外边距（CSS重置） */
+        * {
+            margin: 0;      /* 外边距清零 */
+            padding: 0;     /* 内边距清零 */
+        }
+        /* 标签选择器：直接写标签名，选中所有 p 标签 */
+        p {
+            color: gray;    /* 颜色：灰色 */
+        }
+        /* 类选择器：以 . 开头。选中所有 class="demo" 的标签 */
+        .demo {
+            color: green;   /* 颜色：绿色 */
+        }
+        /* ID选择器：以 # 开头。选中 id="txt" 的标签（id必须唯一） */
+        #txt {
+            color: red;     /* 颜色：红色 */
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 被标签选择器 p 控制，显示灰色 -->
+    <p>我是段落</p>
+    <!-- 被类选择器 .demo 控制，显示绿色 -->
+    <p class="demo">我是类选择器控制的段落</p>
+    <!-- 被ID选择器 #txt 控制，显示红色 -->
+    <p id="txt">我是ID选择器控制的段落</p>
+    
+    <!-- 一个标签可以同时拥有多个类，用空格隔开 -->
+    <p class="demo txt">我是同时有 demo 和 txt 类的段落（样式按优先级覆盖）</p>
+</body>
+</html>
+
+**优先级速查**：  
+`!important` > **行内样式** > **ID选择器** > **类选择器/属性选择器/伪类** > **标签选择器** > **通配符**

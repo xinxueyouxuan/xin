@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!-- 位置二：放在 <head> 头部 -->
+    <!-- 此时页面结构还没有渲染（body是空的），JS 会立即执行并阻塞后面 HTML 的解析 -->
+    <script>
+        alert("这是头部");
+    </script>
+</head>
+<body>
+    <!-- 页面内容区为空 -->
+</body>
+
+<!-- 位置三：放在 </html> 结束标签之后（非常规写法，通常不推荐） -->
+<!-- 此时整个页面已经解析完毕，JS 最后执行 -->
+<script>
+    alert("这是底部");
+</script>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频背景</title>
+    <style>
+        /* 设置body和html全屏 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* 视频背景 */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持视频的比例并覆盖整个容器 */
+            z-index: -1; /* 确保视频在最底层 */
+        }
+
+        /* 内容样式 */
+        .content {
+
+            
+            position: absolute;
+            top: 72%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+            color: rgb(240, 17, 155);
+            font-size: 0.8rem;
+            font-family: 华文彩云;
+            animation: pulse 1.5s infinite;
+            text-align: center;
+            z-index: 1; /* 确保内容显示在上 */
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                color: #ff5c8d;
+            }
+            50% {
+                transform: scale(1.1);
+                color: #ff4c77;
+            }
+            100% {
+                transform: scale(1);
+                color: #ff5c8d;
+            }
+        }
+       
+    </style>
+</head>
+<body>
+
+    <!-- 背景 -->
+    <video class="video-background" autoplay muted loop>
+        <source src="loveyou.mp4" type="video/mp4">
+        
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- 页面内容 -->
+    <div class="content">
+
+       <h1>我  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你</h1>
+        
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>给你的专属爱心❤️</title>
+
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+      font-family: "Russo One", arial, sans-serif;
+    }
+
+    .type_words {
+      position: fixed;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 180px;
+      color: #f1dadb;
+      padding: 20px;
+      text-transform: lowercase;
+    }
+    #divSnow{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <audio id="audioDom" src="https://sf6-cdn-tos.douyinstatic.com/obj/ies-music/7170534431801838367.mp3" preload="auto"
+    loop="loop"></audio>
+  <div class="type_words" id="contents"></div>
+  <script src="three.min.js"></script>
+  <script src="./script.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    function musicPlay(isPlay) {
+      var media = document.querySelector('#audioDom');
+      if (isPlay && media.paused) {
+        media.play();
+      }
+      if (!isPlay && !media.paused) {
+        media.pause();
+      }
+    }
+    function musicInBrowserHandler() {
+      setTimeout(function () {
+        musicPlay(true)
+      }, 0)
+    }
+    document.body.addEventListener('touchstart', musicInBrowserHandler);
+    document.body.addEventListener('click', musicInBrowserHandler);
+
+    function start() {
+      const text = [
+        "于我而言，你是最好且是唯一❤️",
+        "宝贝，永远爱你❤️"
+      ]
+      let str = text.join('<br><br>')
+      let str_ = ''
+      let i = 0
+      let content = document.getElementById('contents')
+      let timer = setInterval(() => {
+        if (str_.length < str.length) {
+          str_ += str[i++]
+          content.innerHTML = '<p>' + str_ + '<span class="xx" style="opacity: 1;    color: red;">❤</span></p>'                        //打印时加光标
+        } else {
+          clearInterval(timer)
+          content.innerHTML = '<p>' + str_ + '</p>'
+        }
+      }, 100)
+    }
+    setTimeout(() => {
+      start();
+    }, 1000);
+  </script>
+
+  <div id="divSnow"></div>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+    <script>window.jQuery || document.write('<script src="static/js/jquery-1.11.0.min.js"><\/script>')</script>
+    <script>
+      !(function(a){a.fn.websnowjq=function(b){function q(){(j=document.getElementById('websnowjqcan'+d)),(k=j.getContext('2d')),(l=document.createElement('canvas')),(m=l.getContext('2d')),(m.canvas.width=k.canvas.width),(m.canvas.height=k.canvas.height),(o=setInterval(r,200)),t(),setInterval(v,30),a(window).resize(function(){a('#websnowjqcan'+d).offset({top:a(c).offset().top,left:a(c).offset().left,})})}function r(){(n[n.length]=new s()),n.length==p.snowFlakes&&clearInterval(o)}function s(){(this.x=Math.round(Math.random()*k.canvas.width)),(this.y=-10),(this.speed=Math.round(5*Math.random())+1),(this.width=3*Math.random()+2),(this.drift=Math.random())}function t(){k.save(),u();for(var a=0;a<n.length;a++)m.beginPath(),m.arc(n[a].x,n[a].y,n[a].width,0,2*Math.PI,!1),(m.fillStyle='#ffffff'),m.fill();k.drawImage(l,0,0,l.width,l.height),k.restore()}function u(){m.clearRect(0,0,m.canvas.width,m.canvas.height),k.clearRect(0,0,m.canvas.width,m.canvas.height)}function v(){w(),t()}function w(){for(var a=0;a<n.length;a++)n[a].y<k.canvas.height?((n[a].y+=n[a].speed),n[a].y>k.canvas.height&&(n[a].y=-5),(n[a].x+=n[a].drift),n[a].x>k.canvas.width&&(n[a].x=0)):(n.splice(a,1),(n[n.length]=new s()))}var c=this[0],d=c.id,e=a(c).offset().left,f=a(c).offset().top,g=a(c).height(),h=a(c).width(),i='top:'+f+'px;left:'+e+'px;position:absolute;',j=null,k=null,l=null,m=null,n=[],o=null,p=a.extend({snowFlakes:100,},b);a('body').append("<canvas width='"+h+"' height='"+g+"' id='websnowjqcan"+d+"' style='"+i+"'></canvas>"),q()}})(jQuery);
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#divSnow").websnowjq();
+        });
+    </script>
+</body>
+
+</html>

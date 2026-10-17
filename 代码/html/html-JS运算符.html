@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>07_算术运算符</title>
+</head>
+<body>
+    <h2>请按 F12 打开浏览器控制台 (Console) 查看运算结果</h2>
+
+    <script>
+        // 定义两个变量用于测试
+        let x = 10;
+        let y = 3;
+
+        console.log("--- 算术运算符基础运算 ---");
+        document.write("算数运算符基础运算结果请查看浏览器控制台 (Console)<br>");
+        
+        // 1. 加法 (+)
+        let sum = x + y;
+        console.log("加法 (x + y):", sum); // 输出：13
+        document.write("加法 (x + y): " + sum + "<br>");
+
+        // 2. 减法 (-)
+        let diff = x - y;
+        console.log("减法 (x - y):", diff); // 输出：7
+        document.write("减法 (x - y): " + diff + "<br>");
+
+        // 3. 乘法 (*)
+        let product = x * y;
+        console.log("乘法 (x * y):", product); // 输出：30
+        document.write("乘法 (x * y): " + product + "<br>");
+
+        // 4. 除法 (/)
+        let quotient = x / y;
+        console.log("除法 (x / y):", quotient); // 输出：3.3333333333333335
+        document.write("除法 (x / y): " + quotient + "<br>");
+
+        // 5. 取模/取余 (%)
+        // 10 除以 3 商 3 余 1，所以结果是 1
+        let remainder = x % y;
+        console.log("取模 (x % y):", remainder); // 输出：1
+        document.write("取模 (x % y): " + remainder + "<br>");
+
+
+        console.log("--- 特殊用法与避坑指南 ---");
+        document.write("<br>特殊用法与避坑指南请查看浏览器控制台 (Console)<br>");
+
+        // ⚠️ 坑点 1：+ 号的双重身份
+        // 当 + 号两边都是数字时，执行加法；
+        // 只要有一边是字符串（String），就会执行字符串拼接！
+        let strNum = "5";
+        console.log("数字 + 数字 (10 + 3):", 10 + 3);         // 输出：13
+        document.write("数字 + 数字 (10 + 3): " + (10 + 3) + "<br>");
+        console.log("数字 + 字符串 (10 + '5'):", 10 + strNum); // 输出："105" (拼接成了字符串)
+        document.write("数字 + 字符串 (10 + '5'): " + (10 + strNum) + "<br>");
+
+        // ⚠️ 坑点 2：NaN (Not a Number)
+        // 如果一个非数字字符串参与除了加法以外的其他运算，会得到 NaN
+        console.log("字符串减法 ('abc' - 3):", "abc" - 3);   // 输出：NaN
+        document.write("字符串减法 ('abc' - 3): " + ("abc" - 3) + "<br>");
+        console.log("隐式转换 ('5' - 2):", "5" - 2);         // 输出：3 (减号会把字符串尝试转成数字)
+        document.write("隐式转换 ('5' - 2): " + ("5" - 2) + "<br>");
+
+        // ⚠️ 坑点 3：浮点数精度问题
+        // 计算机在计算小数时，由于底层二进制的原因，可能会出现极小的误差
+        console.log("0.1 + 0.2:", 0.1 + 0.2); // 输出：0.30000000000000004
+        document.write("0.1 + 0.2: " + (0.1 + 0.2) + "<br>");
+    </script>
+</body>
+</html>

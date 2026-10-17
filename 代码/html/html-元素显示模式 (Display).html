@@ -1,0 +1,43 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>显示模式</title>
+    <style>
+        .box1 {
+            /* block：将元素变成块级元素，独占一行，能设置宽高 */
+            display: block;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+        .box2 {
+            /* inline：将元素变成行内元素，不独占一行，设置宽高无效 */
+            display: inline;
+            width: 100px;  /* 无效 */
+            height: 100px; /* 无效 */
+            background-color: green;
+        }
+        .box3 {
+            /* inline-block：行内块元素，不独占一行，但能设置宽高 */
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <!-- 块级元素：独占一行 -->
+    <div class="box1">块级1</div>
+    <div class="box1">块级2</div>
+    <!-- 行内元素：排在同一行，宽高无效 -->
+    <span class="box2">行内1</span>
+    <span class="box2">行内2</span>
+    <!-- 行内块元素：排在同一行，可以设置宽高 -->
+    <span class="box3">行内块1</span>
+    <span class="box3">行内块2</span>
+</body>
+</html>

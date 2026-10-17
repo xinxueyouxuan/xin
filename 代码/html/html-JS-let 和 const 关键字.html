@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 标识符</title>
+</head>
+<body>
+    <script>
+        // ================== let 关键字 ==================
+        // 声明一个变量 name 并赋值为"小明"
+        let name = "小明"; 
+
+        // 声明一个变量 age
+        let age = 11;      
+
+        // ❌ 报错：变量 age 不能重复定义
+        // 因为 let 声明的变量在同一作用域内不可重复声明，这就是它比 var 更安全的地方
+        // let age = 13;   
+
+        // ================== const 关键字 ==================
+        // 声明一个常量 PI，并赋值为 3.1415
+        const PI = 3.1415; 
+
+        // 在控制台打印 PI 的值
+        console.log(PI); 
+
+        // ❌ 报错：Assignment to constant variable.
+        // const 定义的变量一旦初始化，不能被重新赋值（不能修改）
+        // PI = 3.14;   
+     </script>
+</body>
+</html>

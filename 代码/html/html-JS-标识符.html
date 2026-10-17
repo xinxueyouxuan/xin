@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 标识符</title>
+</head>
+<body>
+    <script>
+        // ============= 合法标识符示例 
+        
+        // 1. 以字母开头（最常用）
+        var userName = "张三"; 
+        document.write("用户名: " + userName + "<br>");
+        
+
+        // 2. 以下划线开头（常用于表示私有变量）
+        var _privateVar = 100; 
+        document.write("私有变量: " + _privateVar + "<br>");
+
+        // 3. 以美元符号开头（常用于 jQuery 或特定库）
+        var $element = document.getElementById("box"); 
+        document.write("元素: " + $element + "<br>");
+        
+
+        // 4. 采用驼峰命名法（推荐规范，非强制）
+        var totalCount = 50; 
+        document.write("总数量: " + totalCount + "<br>");
+
+        // ============= 不合法标识符示例（写出来会直接报错）
+        
+        // var 1stName = "李四";  // 错误：不能以数字开头
+        // var my-name = "王五";  // 错误：不能包含连字符（减号）
+        // var var = "赵六";      // 错误：不能使用关键字 var
+        // var class = "班级";    // 错误：不能使用保留字 class
+
+        // ============= 中文标识符（不推荐但合法） 
+        // 虽然 JS 允许使用 Unicode 字符，但在实际开发中极不推荐，容易引发编码问题和维护困难
+        var 我的名字 = "小明"; 
+        document.write("我的名字: " + 我的名字 + "<br>");
+
+        // ============= 关键字与保留字演示 
+        // 以下词语是 JS 内部占用的，绝对不能用作标识符：
+        // break, case, catch, continue, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with 等
+    </script>
+</body>
+</html>

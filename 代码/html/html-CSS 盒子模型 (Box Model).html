@@ -1,0 +1,42 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>盒子模型</title>
+    <style>
+        .box {
+            /* 内容宽高：盒子内部放置内容的区域 */
+            width: 200px;
+            height: 200px;
+            
+            /* 内边距：内容与边框之间的距离。类似于快递箱里的泡沫纸 */
+            padding: 20px;
+            
+            /* 边框：盒子的外框，需要设置宽度、样式、颜色 */
+            border: 5px solid blue;
+            
+            /* 外边距：盒子与其他盒子之间的距离。类似于两个快递箱之间的空隙 */
+            margin: 30px;
+            
+            /* 背景颜色填充内容 + 内边距 + 边框 */
+            background-color: #ff9919;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">我是一个盒子</div>
+</body>
+</html>
+
+💡 **通俗类比**：
+
+- **内容 (Content)**：快递里的实际商品。
+    
+- **内边距 (Padding)**：商品外包裹的防震泡沫纸。
+    
+- **边框 (Border)**：快递纸箱的厚度和外包装。
+    
+- **外边距 (Margin)**：这个快递箱与旁边另一个快递箱之间的间距。
+    

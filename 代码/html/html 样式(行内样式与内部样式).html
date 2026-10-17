@@ -1,0 +1,50 @@
+
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>块</title>
+    <!-- 内部样式表：写在 style 标签内，用于统一控制多个标签的样式 -->
+    <style>
+        /* 标签选择器：直接写标签名，选中页面中所有的 h1 */
+        h1 {
+            color: green;           /* 字体颜色：绿色 */
+            font-family: 新宋体;    /* 字体：新宋体 */
+            text-align: center;     /* 文本居中对齐 */
+        }
+        /* 标签选择器：选中所有的 h2 */
+        h2 {
+            font-family: 爱奇艺黑体; 
+            text-align: center;     /* 文本水平居中对齐 */
+            color: #ff9919;         /* 字体颜色：十六进制橙色 */
+        }
+        /* ID 选择器：以 # 开头，对应标签中的 id="txt"。id 在网页中必须唯一，类似身份证号 */
+        #txt {
+            color: blue;            /* 字体颜色：蓝色 */
+        }
+        /* 类选择器：以 . 开头，对应标签中的 class="demo"。class 可以重复，类似班级 */
+        .demo {
+            color: red;             /* 字体颜色：红色 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 行内样式：直接在标签内用 style 修改样式 -->
+    <p style="color:red">一个段落。</p>
+    <p style="font-size: 18px">这是一个段落</p>
+    <!-- 同时修改多个样式属性，用分号隔开 -->
+    <p style="font-family: KaiTi; color: red; font-size: 18px">这是一个段落</p>
+    <!-- 文本对齐：使用 text-align 属性指定文本的水平对齐方式 -->
+    <h1 style="text-align: center">这是一个标题</h1>
+    <!-- 使用 id 和 class 让内部样式表的 CSS 生效 -->
+    <h1 id="txt">我是一个标题</h1>       <!-- 被 #txt 样式控制，显示蓝色 -->
+    <h1 class="demo">我是一个标题</h1>    <!-- 被 .demo 样式控制，显示红色 -->
+    <h1 class="demo">我是一个标题</h1>
+    <h1>我是一个标题</h1>                 <!-- 什么都不加，显示默认黑色 -->
+    
+    <h2>这是二级标题</h2>                 <!-- 被 h2 选择器控制，橙色居中 -->
+    <h2>这是二级标题</h2>
+</body>
+</html>

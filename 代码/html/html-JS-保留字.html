@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 保留字</title>
+</head>
+<body>
+    <script>
+        // ================== 错误示例（写出来会直接导致语法错误） ==================
+        
+        // var class = "一班";  // ❌ 报错：SyntaxError。class 是保留字（且现在是关键字）
+        // var enum = 1;        // ❌ 报错：SyntaxError。enum 是保留字
+        // var public = true;   // ❌ 报错：SyntaxError。public 是保留字（严格模式下报错）
+        // var goto = "跳转";   // ❌ 报错：SyntaxError。goto 是保留字
+
+        // ================== 正确示例（规避保留字） ==================
+        
+        // 1. 添加后缀或前缀来避开保留字
+        var className = "一班";       // ✅ 合法，避免使用 class
+        var enumValue = 1;            // ✅ 合法，避免使用 enum
+        var isPublic = true;          // ✅ 合法，避免使用 public
+        
+        // 2. 使用下划线或美元符号修饰
+        var _class = "二班";          // ✅ 合法（但不推荐，容易混淆）
+        var $public = false;          // ✅ 合法
+        
+        // 3. 使用语义更清晰的替代词
+        var userPackage = "基础版";    // ✅ 合法，替代 package
+        var isStatic = false;         // ✅ 合法，替代 static
+    </script>
+</body>
+</html>

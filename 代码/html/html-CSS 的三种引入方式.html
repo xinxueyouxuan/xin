@@ -1,0 +1,31 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS引入方式</title>
+    
+    <!-- 方式二：内部样式表 -->
+    <!-- 写在 <style> 标签中，通过选择器统一控制多个元素 -->
+    <style>
+        /* 标签选择器：选中页面所有的 h1 */
+        h1 {
+            color: blue;        /* 字体颜色：蓝色 */
+            font-size: 24px;    /* 字体大小：24像素 */
+        }
+    </style>
+    <!-- 方式三：外部样式表 -->
+    <!-- <link> 标签引入外部 CSS 文件，rel="stylesheet" 声明关联类型为样式表 -->
+    <!-- href="style.css" 指向 CSS 文件路径 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 方式一：行内样式 -->
+    <!-- 直接在标签内使用 style 属性，多个样式用分号隔开。优先级极高，但不推荐大量使用 -->
+    <p style="color: red; font-size: 18px;">这是一个红色的段落</p>
+    
+    <!-- 使用了内部样式表中的 h1 样式 -->
+    <h1>这是一个标题</h1>
+</body>
+</html>

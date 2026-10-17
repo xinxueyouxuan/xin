@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>炫酷代码</title>
+    <style>
+        /* 设置body和html全屏 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* 背景 */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持内容比例并覆盖整个容器 */
+            z-index: -1; /* 确保内容在最底层 */
+        }
+
+        /* 内容样式 */
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgb(240, 17, 155);
+            font-size: 0.5rem;
+            font-family: 华文彩云;
+            animation: pulse 1.5s infinite;
+            text-align: center;
+            z-index: 1; /* 确保内容显示在内容之上 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景 -->
+    <video class="video-background" autoplay muted loop>
+        <source src="666.mp4" type="video/mp4">
+        
+        Your browser does not support the video tag.
+    </video>
+
+    <audio id="music1" loop preload="auto" controls hidden>
+        
+         <source src=" https://music.90svip.cn/api.php?get=url&type=wy&id=2053617878&sign=e89f4338c57f3270185c42229d5a58c0&t=1743378703" type="audio/mpeg">
+         Your browser does not support the audio element.
+       </audio>
+     
+       <script>
+         document.body.addEventListener('click', function() {
+           var myAudio = document.getElementById('music1');
+           myAudio.play();
+         });
+       </script>
+    <!-- 页面内容 -->
+    <div class="content">  <h1></h1>
+    </div>
+
+</body>
+</html>

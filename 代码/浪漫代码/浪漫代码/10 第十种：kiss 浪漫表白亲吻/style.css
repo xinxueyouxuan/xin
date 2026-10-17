@@ -1,0 +1,108 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+ body {
+  margin: 0;
+  padding: 0;
+  background-color: #ca57a5;
+  overflow: hidden;
+}
+
+.container {
+  height: 100vh;
+  overflow: hidden;
+}
+#couple {
+  max-height: 100%;
+  width: 100%;
+}
+
+#girl-hair {
+  fill:url(#hair-gradient);
+}
+#girl-eye {
+  fill: green;
+}
+
+#girl-earring {
+  fill: #8d8d8d;
+}
+#girl-skirt, #girl-shirt {
+  fill: #791e43;
+}
+#boy-pants {
+  fill: #848487;
+}
+#boy-sleeve {
+  fill: #b8bcbb;
+}
+
+#boy-shirt {
+  fill: #256e89;
+}
+
+#boy-hat-1 {
+   fill: #2e6773;
+}
+#boy-hat-2 {
+   fill: #4f3723;
+}
+
+#couple,
+#heart, 
+#triangle-light
+{
+  visibility: hidden;
+}
+ #triangle-light {
+  fill:url(#light-gradient);
+  fill-opacity: 0.3;
+} 
+
+#ground {
+  fill: #5c5757;
+}
+
+
+
+.heart {
+    position: relative;
+    width: 100px;
+    height: 90px;
+}
+.heart:before,
+.heart:after {
+    position: absolute;
+    content: "";
+    left: 50px;
+    top: 0;
+    width: 50px;
+    height: 80px;
+    background: red;
+    -moz-border-radius: 50px 50px 0 0;
+    border-radius: 50px 50px 0 0;
+    -webkit-transform: rotate(-45deg);
+       -moz-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+         -o-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+    -webkit-transform-origin: 0 100%;
+       -moz-transform-origin: 0 100%;
+        -ms-transform-origin: 0 100%;
+         -o-transform-origin: 0 100%;
+            transform-origin: 0 100%;
+}
+.heart:after {
+    left: 0;
+    -webkit-transform: rotate(45deg);
+       -moz-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+         -o-transform: rotate(45deg);
+            transform: rotate(45deg);
+    -webkit-transform-origin: 100% 100%;
+       -moz-transform-origin: 100% 100%;
+        -ms-transform-origin: 100% 100%;
+         -o-transform-origin: 100% 100%;
+            transform-origin :100% 100%;
+}

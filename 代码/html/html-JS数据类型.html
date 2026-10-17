@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>06_JavaScript数据类型_网页输出</title>
+    <style>
+        /* 稍微加点样式，让网页输出看起来更清晰 */
+        body { font-family: "Microsoft YaHei", sans-serif; line-height: 1.8; padding: 20px; }
+        .title { color: #d9534f; font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h2>JavaScript 数据类型输出结果：</h2>
+    <hr>
+
+    <script>
+        // ==========================================
+        // 6.1 数据类型分类演示
+        // ==========================================
+        
+        document.write("<div class='title'>--- 基本数据类型 (值类型) ---</div>");
+        
+        // 1. String (字符串)
+        let str = "123";
+        // 使用 + 号拼接字符串，将变量和 typeof 的结果连在一起输出
+        document.write("字符串: " + str + " | 类型: " + typeof str + "<br>"); 
+
+        // 2. Number (数值)
+        let numFloat = 3.14;
+        document.write("数值: " + numFloat + " | 类型: " + typeof numFloat + "<br>");
+
+        // 3. Boolean (布尔)
+        let isTrue = true;
+        document.write("布尔: " + isTrue + " | 类型: " + typeof isTrue + "<br>");
+
+        // 4. Undefined (未定义)
+        let undef;
+        document.write("未定义: " + undef + " | 类型: " + typeof undef + "<br>");
+
+        // 5. Null (空)
+        let nul = null;
+        document.write("空值: " + nul + " | 类型: " + typeof nul + " (⚠️历史遗留Bug)<br>");
+
+        // 6. Symbol (ES6 新增)
+        let sym = Symbol("id");
+        // Symbol 不能直接拼接字符串，需要用 toString() 转换
+        document.write("符号: " + sym.toString() + " | 类型: " + typeof sym + "<br>");
+
+
+        document.write("<div class='title'>--- 引用数据类型 ---</div>");
+
+        // 1. Object (对象)
+        let person = { name: "张三", age: 18 };
+        // ⚠️ 注意：document.write 直接输出对象会变成 [object Object]，必须用 JSON.stringify 格式化
+        document.write("对象: " + JSON.stringify(person) + " | 类型: " + typeof person + "<br>");
+
+        // 2. Array (数组)
+        let arr = [1, "abc", true];
+        // 数组可以直接输出，默认会变成逗号分隔的字符串
+        document.write("数组: " + arr + " | 类型: " + typeof arr + " (⚠️数组也是object)<br>");
+        document.write("是否真的是数组: " + Array.isArray(arr) + "<br>");
+
+        // 3. Function (函数)
+        let func = function() { return "hello"; };
+        // 函数直接输出会打印出函数的源码
+        document.write("函数类型: " + typeof func + "<br>");
+
+
+        // ==========================================
+        // 6.2 typeof 操作符的两种写法
+        // ==========================================
+        
+        document.write("<div class='title'>--- typeof 操作符用法 ---</div>");
+        let x = 666;
+        document.write("typeof x (不带括号): " + typeof x + "<br>"); 
+        document.write("typeof(x) (带括号): " + typeof(x) + "<br>"); 
+
+
+        // ==========================================
+        // 6.3 特殊值 NaN (Not a Number)
+        // ==========================================
+        
+        document.write("<div class='title'>--- 特殊数值 NaN ---</div>");
+        let badMath = 0 / 0; 
+        document.write("0除以0的结果: " + badMath + "<br>");
+        document.write("NaN 的类型: " + typeof badMath + "<br>");
+        document.write("NaN 等于它自己吗？ " + (badMath === badMath) + "<br>");
+
+
+        // ==========================================
+        // 进阶避坑：值传递 vs 引用传递
+        // ==========================================
+        
+        document.write("<div class='title'>--- 进阶：值传递 vs 引用传递 ---</div>");
+        
+        // 值传递
+        let a = 10;
+        let b = a;
+        b = 20;
+        document.write("值传递 - a的值: " + a + " | b的值: " + b + "<br>");
+
+        // 引用传递
+        let obj1 = { score: 100 };
+        let obj2 = obj1; 
+        obj2.score = 60; 
+        document.write("引用传递 - obj1的分数: " + obj1.score + " (被 obj2 修改了)<br>");
+
+    </script>
+</body>
+</html>

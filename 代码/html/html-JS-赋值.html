@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 位置一：放在 <head> 头部 -->
+    <!-- 此时页面结构还没有渲染（body是空的），JS 会立即执行并阻塞后面 HTML 的解析 -->
+    <script>
+        // 第一步：声明一个变量 num（此时 num 是 undefined，未定义）
+        var num;    
+        // 第二步：使用 = 赋值，将数字 1 存入名为 num 的变量中
+        num = 1;    // 将变量 num 赋值为 1
+
+        // 声明变量 nums 的同时，将其初始化为 1
+        var nums = 1;    // 定义一个变量 nums 并赋值为 1
+
+        // 同时声明多个变量并分别赋值，用逗号隔开
+        // 这里声明了 a、b、c 三个变量，分别赋值为 2、3、4
+        var a = 2, b = 3, c = 4; 
+    </script>
+</body>
+</html>

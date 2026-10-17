@@ -1,0 +1,20 @@
+<!-- 根标签，所有 HTML 内容都包裹在里面 -->
+<html>
+<!-- <head> 包含网页的元数据、样式和脚本 -->
+<head>
+    <!-- 字符编码设为 UTF-8，防止中文乱码 -->
+    <meta charset="UTF-8">
+    <!-- 网页标题，显示在浏览器标签页上 -->
+    <h1>第一个JavaScript程序</h1>
+    
+    <!-- <script> 标签用于在 HTML 中嵌入 JavaScript 代码 -->
+    <!-- type="text/javascript" 是早期 HTML 规范中声明脚本类型的写法（HTML5 中已可省略） -->
+    <script type="text/javascript">
+        // document.write() 是 JavaScript 的内置方法，用于将内容直接写入 HTML 文档流中
+        // 里面的 "<h1>欢迎来到我的世界</h1>" 是作为字符串传入的 HTML 标签，浏览器会将其解析并渲染成真正的标题
+        document.write("<h1>欢迎来到我的世界</h1>");
+    </script>
+</head>
+<!-- <body> 包含网页的可见内容，这里为空，因为标题已经通过 JS 的 document.write 动态写入 -->
+<body></body>
+</html>

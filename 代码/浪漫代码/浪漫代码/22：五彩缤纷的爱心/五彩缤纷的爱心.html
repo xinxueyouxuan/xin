@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>五彩缤纷的爱心</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			background: #222;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+		}
+
+		canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		h1 {
+			font-size: 40em;
+			margin: 100px auto;
+			animation: rainbow 5s ease-in-out infinite;
+		}
+
+		@keyframes rainbow {
+			0% {
+				color: #ff0000;
+				text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+			}
+
+			25% {
+				color: #ff8000;
+				text-shadow: 0 0 10px #ff8000, 0 0 20px #ff8000, 0 0 30px #ff8000;
+			}
+
+			50% {
+				color: #ffff00;
+				text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #ffff00;
+			}
+
+			75% {
+				color: #00ff00;
+				text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+			}
+
+			100% {
+				color: #0000ff;
+				text-shadow: 0 0 10px #0000ff, 0 0 20px #0000ff, 0 0 30px #0000ff;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+	<h1>❤</h1>
+	<script>
+		const canvas = document.getElementById("canvas");
+		const ctx = canvas.getContext("2d");
+
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		class TextElement {
+			constructor(text, x, y, fontSize, color, dx = 0, dy = 0, speed = 1) {
+				this.text = text;
+				this.x = x;
+				this.y = y;
+				this.fontSize = fontSize;
+				this.color = color;
+				this.dx = dx;
+				this.dy = dy;
+				this.speed = speed;
+			}
+
+			draw() {
+				ctx.font = `${this.fontSize}px Arial`;
+				ctx.fillStyle = this.color;
+				ctx.fillText(this.text, this.x, this.y);
+			}
+
+			update() {
+				if (this.x > canvas.width || this.x < 0) {
+					this.dx = -this.dx;
+				}
+				if (this.y > canvas.height || this.y < 0) {
+					this.dy = -this.dy;
+				}
+				this.x += this.dx * this.speed;
+				this.y += this.dy * this.speed;
+
+			}
+		}
+
+		function init() {
+			for (let i = 0; i < 99; i++) {
+				const fontSize = Math.random() * 50 + 10;
+				const text = '❤';
+				const x = Math.random() * (canvas.width - fontSize * 2);
+				const y = Math.random() * (canvas.height - fontSize * 2);
+				const color = `hsla(${Math.random() * 360}, 100%, 50%, 0.8)`;
+				const dx = Math.random() - 0.5;
+				const dy = Math.random() - 0.5;
+				const speed = Math.random() * 5 + 1;
+				textElements.push(new TextElement(text, x, y, fontSize, color, dx, dy, speed));
+			}
+		}
+
+		const textElements = [];
+
+		init();
+		function animate() {
+			requestAnimationFrame(animate);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			textElements.forEach((textElement) => {
+				textElement.draw();
+				textElement.update();
+			});
+		}
+		animate();
+	</script>
+</body>
+
+</html>

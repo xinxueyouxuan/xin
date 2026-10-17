@@ -1,0 +1,49 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单和输入</title>
+</head>
+<body>
+    <!-- <form> 标签用于为用户输入创建 HTML 表单，action 是提交地址，method 是提交方式 -->
+    <form action="/submit" method="POST">
+        
+        <!-- 文本域：type="text" -->
+        <!-- placeholder 是提示文字，当用户未输入时显示，输入后消失 -->
+        <input type="text" name="username" placeholder="请输入用户名"><br>
+        <!-- 密码字段：type="password" -->
+        <!-- 输入的字符会被隐藏为圆点或星号 -->
+        <input type="password" name="password" placeholder="请输入密码"><br>
+        <!-- 文件上传：type="file" -->
+        <input type="file" name="avatar"><br>
+        <hr> <!-- 水平分割线 -->
+        <!-- 单选按钮：type="radio" -->
+        <!-- 注意：同一组的单选按钮必须具有相同的 name 属性值（如 name="sex"），才能实现互斥（只能选一个） -->
+        <input type="radio" name="sex" value="male">男
+        <input type="radio" name="sex" value="female">女<br>
+        <hr>
+        <!-- 多选框：type="checkbox" -->
+        <!-- 同一组多选框共用一个 name，但可以同时选中多个，value 是提交给服务器的值 -->
+        <input type="checkbox" name="vehicle" value="music">唱歌
+        <input type="checkbox" name="vehicle" value="car">汽车<br>
+        <hr>
+        <!-- 下拉框：<select> 配合 <option> -->
+        <select name="city">
+            <!-- <optgroup> 用于给下拉选项分组，label 是分组名称 -->
+            <optgroup label="湖南省">
+                <!-- <option> 定义下拉列表中的具体选项 -->
+                <option value="changsha">长沙</option>
+                <option value="yueyang">岳阳</option>
+                <option value="liuyang">浏阳</option>
+            </optgroup>
+        </select><br><br>
+        <!-- 提交按钮：点击后将表单数据发送给服务器 -->
+        <input type="submit" value="提交表单">
+        <!-- 重置按钮：type="reset" 是 HTML 原生属性，点击后自动清空当前表单的所有输入 -->
+        <!-- 注意：它必须放在 <form> 标签内部才生效 -->
+        <input type="reset" value="重置表单">
+    </form>
+</body>
+</html>

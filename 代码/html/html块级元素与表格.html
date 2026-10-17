@@ -1,0 +1,42 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>区块与表格</title>
+</head>
+<body>
+    <!-- 块级元素 <div>：盒子，通过 style 设置背景颜色、宽高 -->
+    <!-- 第一个区块：背景橙色，宽300像素，高300像素 -->
+    <div style="background-color: #ff9919; width: 300px;height: 300px">我是第一个区块</div>
+    <!-- 第二个区块：背景绿色，宽300像素，高300像素 -->
+    <div style="background-color: #67ff0d; width: 300px;height: 300px">我是第二个区块</div>
+    <br> <!-- 换行符 -->
+    <!-- 表格标签 <table>，border="1" 是为了显示边框，方便观察 -->
+    <table border="1" cellpadding="5" cellspacing="0">
+        <!-- <tr> 表示表格的一行 (Table Row) -->
+        <tr>
+            <!-- <th> 表示表头单元格 (Table Header)，文字默认加粗且居中 -->
+            <th>姓名</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>爱好</th>
+        </tr>
+        <!-- 数据行 -->
+        <tr>
+            <!-- <td> 表示普通数据单元格 (Table Data) -->
+            <td>张三</td>
+            <td>男</td>
+            <td>18</td>
+            <td>篮球</td>
+        </tr>
+        <tr>
+            <td>李四</td>
+            <td>女</td>
+            <td>25</td>
+            <td>恋爱</td>
+        </tr>
+    </table>
+</body>
+</html>
