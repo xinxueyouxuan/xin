@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 条件判断 - if 语句</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 600px; }
+        h2 { color: #333; }
+        .code-box { background: #2d2d2d; color: #ccc; padding: 15px; border-radius: 5px; font-family: monospace; margin-bottom: 20px; }
+        .highlight { color: #569cd6; } /* 模拟语法高亮 */
+        .string { color: #ce9178; }
+        .keyword { color: #c586c0; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>if 语句核心演示</h2>
+    <p>点击下方按钮，查看 <code>if (age >= 18)</code> 的执行结果。</p>
+    
+    <!-- 模拟图片中的代码展示 -->
+    <div class="code-box">
+        <span class="keyword">var</span> age = 20;<br><br>
+        <span class="keyword">if</span> (age >= 18) {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 如果条件成立，执行这里的代码</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;alert(<span class="string">"已成年，可以进入！"</span>);<br>
+        }
+    </div>
+
+    <button id="runBtn">运行代码并弹窗</button>
+</div>
+
+<script type="text/javascript">
+    // 获取按钮元素
+    var runBtn = document.getElementById('runBtn');
+
+    // 给按钮绑定点击事件，方便演示
+    runBtn.onclick = function() {
+        
+        // ----------------------------------------------------
+        // 核心知识点 1：基本语法与代码执行
+        // ----------------------------------------------------
+        var age = 20;
+        
+        // if 后面的括号 () 里是条件表达式
+        // 当 age >= 18 的计算结果为 true 时，才会执行花括号 {} 里的代码
+        if (age >= 18) {
+            // 补全了图片中被截断的 alert 语句
+            alert("已成年，可以进入！\n(当前 age 值为: " + age + ")");
+            console.log("进入 if 代码块：因为 20 >= 18 是 true");
+        }
+
+
+        // ----------------------------------------------------
+        // 核心知识点 2：条件不成立的情况 (false)
+        // ----------------------------------------------------
+        var childAge = 15;
+        
+        // 如果条件不成立，花括号里的代码会被完全跳过
+        if (childAge >= 18) {
+            // 这行代码永远不会执行，因为 15 >= 18 是 false
+            console.log("这句不会打印在控制台");
+        } else {
+            // 为了演示，我们加一个 else 告诉用户没有执行
+            console.log("进入跳过逻辑：因为 15 >= 18 是 false，if 内部的代码被跳过了");
+        }
+
+
+        // ----------------------------------------------------
+        // 核心知识点 3：JS 中的“真假值”（进阶避坑）
+        // ----------------------------------------------------
+        // 在 JS 中，if 括号里的内容会被强行转换为布尔值（true/false）
+        // 只有以下这些被称为“假值 (falsy)”，其他全是真值 (truthy)：
+        // 0, ""(空字符串), null, undefined, NaN, false
+        
+        var emptyString = "";
+        if (emptyString) {
+            console.log("空字符串是真值"); // 不会执行
+        } else {
+            console.log("注意：空字符串 \"\" 在 if 判断中被视为 false");
+        }
+
+        var zero = 0;
+        if (zero) {
+            console.log("数字 0 是真值"); // 不会执行
+        } else {
+            console.log("注意：数字 0 在 if 判断中被视为 false");
+        }
+    };
+
+</script>
+
+</body>
+</html>

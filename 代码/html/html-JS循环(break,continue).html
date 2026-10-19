@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 循环语句全汇总</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0; }
+        h3 { color: #e67e22; margin-top: 0; }
+        .result-box { border-left: 4px solid #3498db; background-color: #eaf2f8; padding: 10px 15px; margin-top: 10px; font-family: monospace; font-size: 16px; line-height: 1.8; word-break: break-all; }
+        code { background-color: #ecf0f1; padding: 2px 5px; border-radius: 3px; color: #c0392b; font-family: monospace; }
+        .danger { color: #e74c3c; font-weight: bold; }
+        .highlight { color: #27ae60; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>JavaScript 循环与控制语句全演示</h2>
+    <p>请查看每个模块下方的 <span style="color:#3498db;">蓝色结果框</span> 查看运行效果。</p>
+
+    <!-- ========================================== -->
+    <!-- 1. while 循环 -->
+    <!-- ========================================== -->
+    <div class="card">
+        <h3>1. while 循环 (先判断，后执行)</h3>
+        <p>代码逻辑：<code>var i = 1; while(i <= 5) { ... i++; }</code></p>
+        <div id="demo-while" class="result-box"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. do...while 循环 -->
+    <!-- ========================================== -->
+    <div class="card">
+        <h3>2. do...while 循环 (先执行一次，再判断)</h3>
+        <p>代码逻辑：即使初始条件不成立，也会强制执行一次。</p>
+        <div id="demo-dowhile" class="result-box"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. for 循环 -->
+    <!-- ========================================== -->
+    <div class="card">
+        <h3>3. for 循环 (最常用)</h3>
+        <p>代码逻辑：基础 1-10 遍历 & 数组遍历。</p>
+        <div id="demo-for" class="result-box"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4. break 语句 -->
+    <!-- ========================================== -->
+    <div class="card">
+        <h3>4. break 语句 (彻底终止循环)</h3>
+        <p>代码逻辑：在 0-9 的循环中，遇到 <code>i == 5</code> 立刻停止。</p>
+        <div id="demo-break" class="result-box"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 5. continue 语句 -->
+    <!-- ========================================== -->
+    <div class="card">
+        <h3>5. continue 语句 (跳过本次，继续下一次)</h3>
+        <p>代码逻辑：在 0-9 的循环中，跳过所有偶数（<code>i % 2 == 0</code>）。</p>
+        <div id="demo-continue" class="result-box"></div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    // 获取页面上的 HTML 容器，用于显示结果
+    var boxWhile = document.getElementById("demo-while");
+    var boxDoWhile = document.getElementById("demo-dowhile");
+    var boxFor = document.getElementById("demo-for");
+    var boxBreak = document.getElementById("demo-break");
+    var boxContinue = document.getElementById("demo-continue");
+
+    /* ========================================================
+       1. while 循环演示
+       ======================================================== */
+    var strWhile = "<strong>输出结果：</strong><br>";
+    var i = 1;
+    while (i <= 5) {
+        strWhile += i + ", ";
+        i++; // ⚠️ 绝对不能忘记计数器更新，否则会死循环
+    }
+    strWhile += "<br><span class='highlight'>循环结束，因为 i 变成了 6，不再满足 i <= 5。</span>";
+    boxWhile.innerHTML = strWhile;
+
+
+    /* ========================================================
+       2. do...while 循环演示
+       ======================================================== */
+    var strDoWhile = "<strong>测试条件不成立的情况：</strong><br>";
+    var j = 10;
+    do {
+        // 哪怕 10 < 5 是 false，这里也会先执行一次
+        strDoWhile += "执行了一次循环，当前 j = " + j + "<br>";
+        j++;
+    } while (j < 5);
+    strDoWhile += "<span class='highlight'>循环结束。因为 do...while 是先执行后判断，所以它至少会运行一次。</span>";
+    boxDoWhile.innerHTML = strDoWhile;
+
+
+    /* ========================================================
+       3. for 循环演示
+       ======================================================== */
+    var strFor = "<strong>3.1 基础数字遍历 (1-10)：</strong><br>";
+    for (var k = 1; k <= 10; k++) {
+        strFor += k + " ";
+    }
+
+    strFor += "<br><br><strong>3.2 数组遍历：</strong><br>";
+    var fruits = ["python", "java", "php", "mysql", "redis"];
+    for (var m = 0; m < fruits.length; m++) {
+        // 使用 &emsp; 增加空格
+        strFor += fruits[m] + "&emsp;"; 
+    }
+    boxFor.innerHTML = strFor;
+
+
+    /* ========================================================
+       4. break 语句演示
+       ======================================================== */
+    var strBreak = "<strong>输出结果：</strong><br>";
+    for (var n = 0; n < 10; n++) {
+        if (n == 5) {
+            strBreak += "<span class='danger'>[触发 break！遇到 5 时，循环被直接强行终止]</span><br>";
+            break; // 彻底跳出 for 循环
+        }
+        strBreak += "n = " + n + "<br>";
+    }
+    // 因为 break 跳出了循环，所以这行代码会被执行
+    strBreak += "<strong>—— 执行了循环之外的代码 ——</strong>";
+    boxBreak.innerHTML = strBreak;
+
+
+    /* ========================================================
+       5. continue 语句演示
+       ======================================================== */
+    var strContinue = "<strong>输出结果（只显示奇数）：</strong><br>";
+    for (var p = 0; p < 10; p++) {
+        if (p % 2 == 0) {
+            // 如果是偶数，跳过本次循环后面的代码，直接执行 p++
+            continue; 
+        }
+        // 只有奇数才会走到这一步
+        strContinue += "p = " + p + "&nbsp;&nbsp;"; 
+    }
+    boxContinue.innerHTML = strContinue;
+
+</script>
+
+</body>
+</html>

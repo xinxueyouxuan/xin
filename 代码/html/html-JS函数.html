@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 函数全解析</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; padding: 20px; background-color: #f4f7f6; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; }
+        h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .output { background: #eaf2f8; border-left: 4px solid #3498db; padding: 15px; font-family: monospace; font-size: 16px; line-height: 1.6; }
+        code { background: #ecf0f1; padding: 2px 5px; color: #c0392b; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3>13. 函数综合演示</h3>
+    
+    <p><strong>1. 基础定义与调用 (sayHello)</strong></p>
+    <div id="demo-basic" class="output"></div>
+
+    <p><strong>2. 默认参数演示 (带有默认值的函数)</strong></p>
+    <div id="demo-default" class="output"></div>
+
+    <p><strong>3. 带有返回值的函数 (getSum)</strong></p>
+    <div id="demo-return" class="output"></div>
+</div>
+
+<script type="text/javascript">
+    // 获取页面元素
+    var boxBasic = document.getElementById("demo-basic");
+    var boxDefault = document.getElementById("demo-default");
+    var boxReturn = document.getElementById("demo-return");
+
+
+    /* ========================================================
+       13.1 & 13.2 基础定义与调用
+       ======================================================== */
+    // 定义函数，带有一个形参 name
+    function sayHello(name) {
+        // 直接向页面写入结果
+        boxBasic.innerHTML += "Hello " + name + "！<br>";
+    }
+
+    // 调用函数，传入实参 '小明'
+    boxBasic.innerHTML += "调用 sayHello('小明') 的结果：<br>";
+    sayHello("小明"); 
+    
+    boxBasic.innerHTML += "调用 sayHello('前端开发者') 的结果：<br>";
+    sayHello("前端开发者");
+
+
+    /* ========================================================
+       13.3 默认参数
+       ======================================================== */
+    // 定义函数，设置默认参数 name = "World"
+    function sayHelloDefault(name = "World") {
+        boxDefault.innerHTML += "Hello " + name + "！<br>";
+    }
+
+    boxDefault.innerHTML += "调用 sayHelloDefault() 不传参数的结果：<br>";
+    // 因为没有传参，所以使用默认值 "World"
+    sayHelloDefault(); 
+
+    boxDefault.innerHTML += "调用 sayHelloDefault('python') 传参的结果：<br>";
+    // 传了参数，默认值被覆盖
+    sayHelloDefault('python'); 
+
+
+    /* ========================================================
+       13.4 函数返回值
+       ======================================================== */
+    // 定义一个计算两数之和的函数
+    function getSum(num1, num2) {
+        // 使用 return 将计算结果返回出去
+        return num1 + num2;
+    }
+
+    // 调用函数，并使用变量 sum1 接收返回值
+    var sum1 = getSum(7, 12);
+    boxReturn.innerHTML += "getSum(7, 12) 的返回值是：<span style='color:red;'>" + sum1 + "</span><br>";
+
+    var sum2 = getSum(-5, 33);
+    boxReturn.innerHTML += "getSum(-5, 33) 的返回值是：<span style='color:red;'>" + sum2 + "</span><br>";
+
+    // 也可以直接在输出语句中调用函数
+    boxReturn.innerHTML += "直接调用 getSum(100, 200) 的结果是：<span style='color:red;'>" + getSum(100, 200) + "</span><br>";
+
+
+    /* ========================================================
+       ⚠️ 进阶避坑提示（截图中未提及，但极重要）
+       ======================================================== */
+    // 如果函数内部没有写 return，或者写了 return 但没有值，函数默认返回 undefined
+    function noReturn() {
+        var a = 1 + 1;
+        // 这里没有 return
+    }
+    console.log("没有返回值的函数执行结果:", noReturn()); // 控制台会打印 undefined
+
+</script>
+
+</body>
+</html>

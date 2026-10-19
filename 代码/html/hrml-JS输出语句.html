@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript 输出语句综合演示</title>
+    <style>
+        /* 简单加点样式，让页面看着清晰些 */
+        body { font-family: sans-serif; padding: 20px; }
+        .box { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background-color: #f9f9f9; }
+        button { padding: 5px 10px; margin-right: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>JavaScript 输出语句测试台</h2>
+    
+    <!-- 这是给 innerHTML 准备的一个容器 -->
+    <div class="box">
+        <h3>8.5 innerHTML 测试区</h3>
+        <p>下面这个 div 的 id 是 "demo"。</p>
+        <div id="demo" style="color: red; font-weight: bold;">这里原本的文本将被覆盖</div>
+    </div>
+
+    <!-- 使用按钮来控制执行顺序，避免页面一打开弹窗太多 -->
+    <div class="box">
+        <h3>交互触发区</h3>
+        <p>（请按 F12 打开浏览器控制台，观察 console 的输出）</p>
+        <button id="btnAlert">1. 测试 alert()</button>
+        <button id="btnConfirm">2. 测试 confirm()</button>
+        <button id="btnWrite">3. 测试 document.write()</button>
+        <button id="btnInner">4. 测试 innerHTML</button>
+        <button id="btnConsole">5. 测试 console.log()</button>
+    </div>
+
+    <script type="text/javascript">
+        // 获取页面上的按钮元素
+        var btnAlert = document.getElementById("btnAlert");
+        var btnConfirm = document.getElementById("btnConfirm");
+        var btnWrite = document.getElementById("btnWrite");
+        var btnInner = document.getElementById("btnInner");
+        var btnConsole = document.getElementById("btnConsole");
+
+        // 变量准备 (对应图片 8.1 中的代码)
+        var a = 11;
+        var b = 5;
+
+        /* ========================================================
+           1. 演示 alert()
+           ======================================================== */
+        btnAlert.onclick = function() {
+            // 弹出一个简单的提示框，只有"确定"按钮
+            alert("这是一个 alert 提示框！\n变量 a 的值是：" + a);
+        };
+
+        /* ========================================================
+           2. 演示 confirm()
+           ======================================================== */
+        btnConfirm.onclick = function() {
+            // 弹出带有"确定"和"取消"的对话框
+            // 并将用户的选择结果（true 或 false）赋值给变量 res
+            var res = window.confirm("这是一个 confirm 对话框，你确定要点击吗？");
+            
+            if (res === true) {
+                alert("你刚才点击了【确定】按钮！(返回 true)");
+            } else {
+                alert("你刚才点击了【取消】按钮！(返回 false)");
+            }
+        };
+
+        /* ========================================================
+           3. 演示 document.write() 
+           ======================================================== */
+        btnWrite.onclick = function() {
+            // 注意：在页面加载完成之后调用 document.write()，
+            // 会清空页面上原有的所有内容（包括这些按钮），重新写入！
+            document.write("<h1 style='color: purple;'>糟糕！你使用了 document.write()</h1>");
+            document.write("<p>页面原本的内容被完全覆盖了！请刷新页面重试。</p>");
+        };
+
+        /* ========================================================
+           4. 演示 innerHTML 
+           ======================================================== */
+        btnInner.onclick = function() {
+            // 1. 获取 id 为 demo 的 HTML 元素
+            var demoDiv = document.getElementById("demo");
+            
+            // 2. 将内部内容替换为包含 HTML 标签的文本
+            // innerHTML 会解析 <h2> 标签，让文字变成标题样式
+            demoDiv.innerHTML = "<h2 style='color: green;'>我是通过 innerHTML 写入的 &lt;h2&gt; 标签</h2>";
+            
+            // 如果不希望解析标签，可以使用 innerText，它会原样显示文本
+            // demoDiv.innerText = "<h2>你看我是不是原样显示了？</h2>";
+        };
+
+        /* ========================================================
+           5. 演示 console.log() 
+           ======================================================== */
+        btnConsole.onclick = function() {
+            // 不会在页面上弹窗，也不会修改页面，只在控制台输出，最安全的调试方式
+            console.log("--- console.log 测试开始 ---");
+            console.log("你好，开发者！");
+            console.log("变量 a 的值是:", a);
+            console.log("变量 b 的值是:", b);
+            console.log("a + b 的计算结果是:", a + b);
+            console.log("--- console.log 测试结束 ---");
+            
+            alert("请按 F12 打开控制台 (Console) 查看输出结果！");
+        };
+
+    </script>
+</body>
+</html>
