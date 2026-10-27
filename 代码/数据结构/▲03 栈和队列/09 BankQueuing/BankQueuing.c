@@ -96,7 +96,7 @@ void CustomerArrived()							//处理客户到达事件，gEn.NType=0
 	gCustomerRcd.Duration    = durtime;
 	gCustomerRcd.Count       = gCustomerNum;
 
-	i = Minimum(gQ);							//求长度最短队列
+	i = Minimum();							//求长度最短队列
 	EnQueue_L(&gQ[i], gCustomerRcd); 			//当前客户进入最短队列
 	Show();
 	
