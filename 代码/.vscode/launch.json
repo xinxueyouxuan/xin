@@ -2,6 +2,62 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "text5_5",
+            "request": "launch",
+            "mainClass": "text5_5.text5_5",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "text5",
+            "request": "launch",
+            "mainClass": "text5_5.text5",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "Text",
+            "request": "launch",
+            "mainClass": "text4_5.Text",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "text4_6.Main",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "Text1",
+            "request": "launch",
+            "mainClass": "Text1",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "the_text",
+            "request": "launch",
+            "mainClass": "com.the_text",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "Text",
+            "request": "launch",
+            "mainClass": "com.Text",
+            "projectName": "代码_e2633d42"
+        },
+        {
+            "type": "java",
+            "name": "text1",
+            "request": "launch",
+            "mainClass": "java.text1",
+            "projectName": "代码_e2633d42"
+        },
+        {
             "name": "C/C++: gcc.exe 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
