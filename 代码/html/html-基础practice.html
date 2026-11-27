@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <style>
+        body{
+            background: black;
+            color: white;
+            margin: 0;
+            display: flex;
+            /*垂直居中*/
+            align-items: center;
+            /*水平居中*/
+            justify-content: center;
+            /*文本居中*/
+            text-align:center;
+        }
+        button{
+            background: orange;
+            color:black;
+        }
+    </style>
+    </head>
+    
+    <body>
+        <h1>我的练习</h1>
+        <p>我正在学HTML</p>
+        <button id="Btn">按我</button>
+        <script>
+            const btn = document.getElementById('Btn');
+            btn.onclick = function(){
+                alert('你按了我！');
+            }
+        </script>
+    </body>
+</html>

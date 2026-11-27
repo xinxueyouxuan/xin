@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- 网页编码-->
+        <meta charset="UTF-8">
+        <!-- 网页标题-->
+        <title>这是网页</title>
+    <!-- 网页样式(CSS)-->
+        <style>
+            /*
+            选择器 {
+              属性: 值;
+              属性: 值;
+            }
+            选择器-->选择修改区域
+            */
+            body{
+                /*背景颜色变黑*/
+                background: black;
+                /*文字颜色变白*/
+                color: white;
+                /*清除默认的边距*/
+                margin: 0;
+                /*使用弹性布局*/
+                display: flex;
+                /*竖着排列*/
+                flex-direction: column;
+                /*垂直居中*/
+                align-items: center;
+                /*水平居中*/
+                justify-content: center;
+                /*至少和屏幕一样高*/
+                min-height: 100vh;
+                /*文字居中*/
+                text-align: center;
+                /*字体种类*/
+                font-family: KaiTi;
+            }
+
+            /*
+        CSS万能居中对齐
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+            */
+
+            h1{
+                /*文字居中*/
+                text-align: center;
+                /*文字颜色变红*/
+                color: red;
+            }
+           /*
+           CSS 选择器就 3 种（够用了）
+写法	    选中什么	        例子
+body	某种标签	         所有 <h1> 用 h1 { }
+#cv	    id 是 cv 的元素	    <canvas id="cv"> 用 #cv { }
+.box	class是box的元素	<div class="box"> 用 .box { }
+           */
+
+            button{
+                /*按钮内边框:上下10,左右30*/
+                padding: 10px 30px;
+                /*字号18*/
+                font-size: 18px;
+                /*背景颜色*/
+                background-color: #ffb45a;
+                /*文字颜色*/
+                color:black;
+                /*去掉边框*/
+                border: none;
+                /*圆角*/
+                border-radius: 8px;
+                /*鼠标放上去变成手型*/
+                cursor: pointer;
+            }
+        </style>
+
+    </head>
+
+    <body>
+        hello world!!!
+        你好
+        <h1>这是一号标题(标题都会独占一行，字大加粗)</h1>
+        <h2>这是二号标题</h2>
+            <p>这是一个段落，会自动上下留空隙(独占一行)</p>
+        <h3>这是三号标题</h3>
+            <p>这是第二个段落</p>
+        <h4>这是四号标题</h4>
+        <h5>这是五号标题</h5>
+        <h6>这是六号标题</h6>
+
+        <div>这是一个盒子(装东西用)，默认会换行(独占一行)</div>
+
+        <span>这是一个行内小标签。(不独占行)</span>
+        <span>不会换行，会和前面连一起</span>
+
+        <button id="mybtn">点击按钮</button>
+
+        <script>
+            //找到按钮(通过id)
+            const btn = document.getElementById('mybtn');
+            /*
+        document = 整个网页
+        .getElementById('myBtn') = 找 id="myBtn" 的元素
+        const btn == 把它存到变量 btn 里
+            */
+            
+            //设置：点击时执行
+            btn.onclick = function () {
+                alert('你点击了按钮');
+            };
+            /*
+        btn.onclick = "当 btn 被点击时"
+        function() { ... } = "执行大括号里的代码"
+        这是事件绑定：把"点击"和"要做的事"绑在一起
+            */
+        </script>
+    </body>
+    <!--
+        <!DOCTYPE html>        ← 第1行：声明"这是HTML5"，永远放第一行
+        <html>                 ← 整个网页的外壳
+        <head>                 ← 给浏览器看的（用户看不见）
+        <title>...</title>   ←   浏览器标签上显示的文字
+        </head>
+        <body>                 ← 给用户看的（页面里的内容）
+        你好...
+        </body>
+        </html>                ← 外壳结束
+    -->
+</html>

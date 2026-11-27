@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!-- ↑ 声明这是 HTML5 文档，永远放第一行 -->
+
+<html>
+<!-- ↑ 整个网页的外壳 -->
+
+<head>
+  <!-- ↑ <head> 是"脑袋"：给浏览器看的信息，用户看不见 -->
+
+  <!-- ========== 网页编码 ========== -->
+  <meta charset="UTF-8">
+  <!-- ↑ 告诉浏览器用 UTF-8 读文件，中文才不乱码 -->
+  <!--   注意：是 charset，不是 charest！char + set = 字符集 -->
+
+  <!-- ========== 网页标题 ========== -->
+  <title>canvas 练习</title>
+  <!-- ↑ 浏览器标签页上显示的文字 -->
+
+  <!-- ========== 网页样式（CSS） ========== -->
+  <style>
+    /*
+       CSS 语法：
+       选择器 {
+         属性: 值;
+         属性: 值;
+       }
+
+       选择器 3 种：
+       body       → 选中所有 body 标签
+       #cv        → 选中 id="cv" 的元素
+       .box       → 选中 class="box" 的元素
+
+       ⚠️ 所有标点必须是英文半角！中文冒号/分号会让整行失效！
+    */
+
+    body {
+      margin: 0;
+      /* ↑ 去掉浏览器默认的 8px 边距，否则页面四周有白边 */
+      background: black;
+      /* ↑ 背景色黑色 */
+      display: flex;
+      /* ↑ 开启弹性布局（不写这个，align-items 和 justify-content 都无效！） */
+      justify-content: center;
+      /* ↑ 水平居中（flex 的主轴方向，column 时是垂直，row 时是水平） */
+      align-items: center;
+      /* ↑ 垂直居中（flex 的交叉轴方向） */
+      min-height: 100vh;
+      /* ↑ 最小高度 = 屏幕高度的 100%（vh = viewport height） */
+      /*   不写这行，body 只有内容那么高，居中就看不出来 */
+    }
+
+    #cv {
+      /* ↑ 选中 id="cv" 的 canvas 元素 */
+      border-radius: 8px;
+      /* ↑ 圆角 8 像素 */
+      box-shadow: 0 0 40px white;
+      /* ↑ 阴影：x偏移 y偏移 模糊半径 颜色 */
+      /*   0 0 40px = 不偏移，四周扩散 40px 白色光晕 */
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ↑ <body> 是"身体"：用户能看见的所有内容 -->
+
+  <canvas id="cv"></canvas>
+  <!--↑ 画布元素，id="cv" 是它的"身份证"，JS 靠这个找到它 -->
+  <!--  现在它是空白的，大小由 JS 设置 -->
+  <script>
+    // ============================================================
+    //  JavaScript 部分：所有画图逻辑在这里
+    //  注意：<script> 必须在 <canvas> 后面！
+    //  因为 JS 从上往下执行，如果 script 在前，canvas 还没创建，
+    //  getElementById 会找不到元素，返回 null
+    // ============================================================
+
+    // ---------- 第 1 步：找到画布 ----------
+    const cv = document.getElementById('cv');
+    // ↑ document = 整个网页
+    //   getElementById('cv') = 找 id="cv" 的元素
+    //   const cv = = 存到变量 cv 里
+    //   cv 是"常量"，后面不能改指向，但可以改它的属性（如 cv.width）
+
+    // ---------- 第 2 步：设置画布大小 ----------
+    cv.width = 400;
+    // ↑ 宽 400 像素。⚠️ 这是"属性"，不是 CSS 的 width！
+    //   CSS 的 width 控制"显示大小"，属性的 width 控制"分辨率"
+
+    cv.height = 400;
+    // ↑ 高 400 像素
+
+    // ---------- 第 3 步：拿到画笔 ----------
+    const ctx = cv.getContext('2d');
+    // ↑ getContext('2d') = "给我 2D 画笔"
+    //   以后所有绘制都用 ctx，cv 只用来设大小
+
+    // ============================================================
+    //  下面开始画画
+    //  记住：canvas 坐标系原点在【左上角】，x 向右，y 向下
+    //
+    //  (0,0) ──────────→ x
+    //    │
+    //    │
+    //    ↓
+    //    y
+    // ============================================================
+
+    // ---------- 画法 1：实心矩形 ----------
+    ctx.fillStyle = 'red';
+    // ↑ 设置"填充色"为红色
+    //   fillStyle 控制所有"填充"类绘制的颜色（fillRect / fill / fillText）
+
+    ctx.fillRect(50, 50, 200, 200);
+    // ↑ 画实心矩形
+    //   fillRect(x, y, 宽, 高)
+    //   x=50：左边缘离画布左边 50 像素
+    //   y=50：上边缘离画布上边 50 像素
+    //   宽=200：往右延伸 200
+    //   高=200：往下延伸 200
+    //   → 左上角在 (50,50)，右下角在 (250,250)
+
+    // ---------- 画法 2：空心矩形（描边） ----------
+    ctx.strokeStyle = 'white';
+    // ↑ 设置"描边色"为白色
+    //   ⚠️ 描边用 strokeStyle，不是 fillStyle！
+    //   fillStyle 对 strokeRect 无效
+
+    ctx.lineWidth = 3;
+    // ↑ 描边线宽 3 像素（不写默认 1 像素，太细看不清）
+
+    ctx.strokeRect(300, 50, 80, 80);
+    // ↑ 画空心矩形
+    //   strokeRect(x, y, 宽, 高)
+    //   参数和 fillRect 完全一样，只是画的是"边框"不是"实心"
+
+    // ---------- 画法 3：圆 ----------
+    ctx.fillStyle = 'yellow';
+    // ↑ 圆的填充色（重设 fillStyle，因为上一步设的是描边色）
+
+    ctx.beginPath();
+    // ↑ "开始一条新路径"
+    //   画圆/画线条必须用这个，否则会跟上一次的图形连在一起
+
+    ctx.arc(200, 200, 60, 0, Math.PI * 2);
+    // ↑ 在路径里画一个圆
+    //   arc(圆心x, 圆心y, 半径, 起始弧度, 结束弧度)
+    //   圆心x=200, 圆心y=200：圆心在画布正中
+    //   半径=60：圆半径 60 像素
+    //   起始弧度=0：从 0° 开始（右侧水平线位置）
+    //   结束弧度=Math.PI*2：到 360° 结束（2π 弧度 = 一圈）
+    //   → 完整圆
+
+    ctx.fill();
+    // ↑ "填充这个路径"
+    //   不写 fill() 的话，路径只是"存在"，不会显示出来
+
+    // ---------- 画法 4：文字 ----------
+    ctx.fillStyle = 'cyan';
+    // ↑ 文字颜色
+
+    ctx.font = '24px KaiTi';
+    // ↑ 设置字体：字号 字体名
+    //   格式："大小 字体"，必须带 px
+    //   KaiTi = 楷体（Windows 有）。Mac 用 STKaiti
+
+    ctx.textAlign = 'center';
+    // ↑ 文字对齐方式：'left'（默认）| 'center' | 'right'
+    //   center 表示"x 坐标是文字的中间点"
+
+    ctx.textBaseline = 'middle';
+    // ↑ 垂直对齐：'top' | 'middle' | 'bottom' | 'alphabetic'（默认）
+    //   middle 表示"y 坐标是文字的垂直中间"
+
+    ctx.fillText('你好，canvas！', 200, 350);
+    // ↑ 画文字
+    //   fillText(文字, x, y)
+    //   因为上面设了 textAlign=center + textBaseline=middle，
+    //   所以 (200, 350) 是文字的"正中心"，而不是左上角
+
+    // ============================================================
+    //  ⚠️ 重要概念：绘制是"叠加"的，不是替换！
+    //
+    //  每次 fillRect / arc+fill 都是【画在上面】，不会清空之前的。
+    //  所以上面的 4 个图形会同时存在，互不覆盖（除非位置重叠）。
+    //
+    //  做动画的时候必须每帧清空：
+    //    ctx.fillStyle = '#111';
+    //    ctx.fillRect(0, 0, 400, 400);
+    //  否则画面会越叠越乱。
+    //
+    //  ⚠️ 颜色设置也是"持续"的：
+    //    ctx.fillStyle = 'red' 之后，
+    //    再画的所有东西都是红色，直到你改 fillStyle
+    // ============================================================
+
+/*
+知识点	      代码	                      说明
+填充色	  ctx.fillStyle='颜色'	        控制 fill 系列的颜色
+描边色	  ctx.strokeStyle='颜色'  	    控制 stroke 系列的颜色
+实心矩形	ctx.fillRect(x,y,w,h)	        画实心方块
+空心矩形	ctx.strokeRect(x,y,w,h) 	    画框
+圆	 beginPath()→arc(x,y,r,0,2π)→ fill()	三步走，缺一不可
+文字	font + fillText(text,x,y)     可选 textAlign、textBaseline 精确定位
+*/
+  </script>
+</body>
+
+</html>

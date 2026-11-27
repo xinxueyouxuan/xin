@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>迷宫逃脱 · 暗影回廊</title>
+<style>
+/* ========== 主题变量（默认深色，跟随系统可切换） ========== */
+:root{
+  --bg:#05060a;
+  --fg:#e9e4d8;
+  --ac:#ffb45a;
+  --btn:#1a1c26;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#05060a;--fg:#e9e4d8;--ac:#ffb45a;--btn:#1a1c26}
+}
+:root[data-theme="dark"]{--bg:#05060a;--fg:#e9e4d8;--ac:#ffb45a;--btn:#1a1c26}
+
+/* ========== 基础排版 ========== */
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:15px/1.5 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  text-align:center;
+  padding:6px;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* ========== 顶部 HUD：关卡 / 步数 / 血条 / 状态 ========== */
+#hud{
+  display:flex;flex-wrap:wrap;gap:6px 8px;
+  justify-content:center;align-items:center;
+  margin:2px 0 6px;font-size:14px;letter-spacing:.05em;
+}
+#hud span{color:var(--ac)}
+#hpw{flex-basis:100%;display:flex;gap:8px;justify-content:center;align-items:center}
+#hp{width:150px;height:12px;border:1px solid #6a2a2a;border-radius:6px;background:#1a0808;overflow:hidden}
+#hpf{display:block;height:100%;background:linear-gradient(90deg,#a01020,#ff4a3a);transition:width .25s}
+
+/* 浮层提示文字（拾取道具等） */
+#msg{
+  position:absolute;top:10px;left:0;right:0;
+  font-size:15px;color:#fff;
+  text-shadow:0 0 8px #000,0 0 14px var(--ac);
+  pointer-events:none;
+}
+
+/* 通用按钮 */
+button{
+  background:var(--btn);color:var(--fg);
+  border:1px solid #3a3326;border-radius:8px;
+  padding:6px 12px;font-size:14px;
+}
+
+/* ========== 画布容器 ========== */
+#wrap{position:relative;display:inline-block;line-height:0}
+canvas{border-radius:6px;box-shadow:0 0 40px #000}
+
+/* 覆盖层（标题 / 胜利 / 失败） */
+#ov{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(2,3,8,.84);padding:16px;line-height:1.5;border-radius:6px;
+}
+#ov h2{
+  font-size:30px;margin:0 0 8px;color:var(--ac);
+  text-shadow:0 0 18px #ff8a2a,0 0 40px #a33;letter-spacing:.2em;
+}
+#ov p{max-width:300px;margin:0 0 16px;color:#b9b2a2;font-size:14px}
+#ob{font-size:17px;padding:10px 26px;background:#2a1a0c;border-color:var(--ac);color:var(--ac)}
+
+/* 探路结果列表（左下角） */
+#rl{
+  position:absolute;left:8px;bottom:8px;
+  margin:0;padding:0;list-style:none;
+  font-size:13px;color:#7dffb0;text-align:left;
+  pointer-events:none;text-shadow:0 0 6px #000;
+}
+
+/* ========== 触屏方向键 ========== */
+#pad{
+  display:grid;grid-template-columns:repeat(3,58px);gap:6px;
+  justify-content:center;margin:8px auto 0;touch-action:none;
+}
+#pad button{height:46px;font-size:20px;touch-action:none}
+</style>
+</head>
+<body>
+
+<!-- ===================== 顶部信息栏 ===================== -->
+<div id="hud">
+  <span id="h1"></span><span id="h2"></span>
+  <button id="bs"></button><button id="bm">🔊</button>
+  <div id="hpw">
+    <span>❤</span>
+    <div id="hp"><i id="hpf"></i></div>
+    <span id="hpt"></span><span id="h3"></span>
+  </div>
+</div>
+
+<!-- ===================== 游戏画面 ===================== -->
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <div id="msg"></div>
+  <ul id="rl"></ul>
+  <div id="ov"><h2 id="ot"></h2><p id="op"></p><button id="ob"></button></div>
+</div>
+
+<!-- ===================== 触屏方向键 ===================== -->
+<div id="pad">
+  <span></span><button data-k="u">↑</button><span></span>
+  <button data-k="l">←</button><button data-k="d">↓</button><button data-k="r">→</button>
+</div>
+
+<script>
+/* ============================================================
+ * 迷宫逃脱 · 暗影回廊
+ * ------------------------------------------------------------
+ * 玩法：黑暗迷宫中先找到金色钥匙，再冲向出口传送门。
+ *   - 方向键 / WASD 移动，R 键消耗一次「探路」显示候选路线
+ *   - 怪物在 5 步范围内追踪玩家，黑暗中的红眼提示其位置
+ *   - 地刺周期性升降，踩中扣血
+ * 代码结构：
+ *   1) 图与算法    2) 音频合成    3) 关卡构建
+ *   4) 游戏流程    5) 状态更新    6) 渲染绘制
+ *   7) 输入处理    8) 主循环
+ * ============================================================ */
+
+const $ = id => document.getElementById(id);
+const cv = $('cv');
+const ctx = cv.getContext('2d');
+
+/* 四方向位移（行, 列） */
+const D = { u:[-1,0], d:[1,0], l:[0,-1], r:[0,1] };
+
+/* 道具定义：颜色 / 图标字符 / 拾取提示文字 */
+const IT = {
+  heal:  ['#4f8','+','回血 +35'],
+  shield:['#5af','盾','护盾 6 秒'],
+  speed: ['#fd4','速','疾跑 5 秒'],
+  freeze:['#9ef','冰','怪物冻结 4 秒'],
+  scroll:['#d8f','卷','探路次数 +1'],
+  key:   ['#fc3','钥','获得钥匙，传送门已开启']
+};
+
+/* ---------- 全局状态 ---------- */
+let N, EXIT, cs, size, dpr;               // 迷宫边长(格) / 出口索引 / 单格像素 / 画布像素 / 设备像素比
+let adj;                                  // 邻接表：adj[i] = 与格 i 相通的格索引数组
+let seen, seenP, litP;                    // 已探索标记 / 已探索区域路径 / 当前照亮区域路径
+let dist;                                 // 以玩家为源的 BFS 距离数组
+let tex;                                  // 每格的随机纹理系数（视觉噪点）
+let mazeCv, dk, dkx;                      // 静态迷宫底图 / 黑暗遮罩画布 / 其上下文
+let pl, mons;                             // 玩家对象 / 怪物数组
+let parts = [], dust = [];                // 粒子 / 背景浮尘
+
+let hasKey = false;                       // 是否已拿到钥匙
+let traps = [];                           // 地刺
+let hp = 100, hpKeep = 100;               // 当前血量 / 跨关保留血量
+let invT = 0, shieldT = 0, speedT = 0, freezeT = 0; // 无敌 / 护盾 / 加速 / 冻结 计时
+let hurt = 0, msgT = 0;                   // 受伤红屏强度 / 提示文字剩余时间
+let items = [];                           // 场上道具
+let lvl = 1, state = 'title';             // 关卡数 / 状态：title|play|win|dead
+let steps = 0, time = 0;                  // 步数 / 用时(秒)
+let charges = 3;                          // 探路剩余次数
+let routes = [], routeT = 0;              // 探路得到的候选路线 / 其显示剩余时间
+let shake = 0, danger = 0, dDisp = 0;     // 屏幕震动 / 危险值(0~1) / 平滑后的危险值
+let hbT = 0;                              // 心跳音间隔计时
+let dirs = [];                            // 当前按住的方向（栈，取最后一个）
+let muted = false;                        // 静音开关
+let AC, master;                           // AudioContext / 主音量节点
+
+/* ============================================================
+ * 1) 图与算法
+ * ============================================================ */
+
+/* 返回格 i 的四个相邻格索引（不做连通性判断，仅边界裁剪） */
+function nbrs(i) {
+  const r = i / N | 0, c = i % N, o = [];
+  if (r > 0)   o.push(i - N);
+  if (r < N-1) o.push(i + N);
+  if (c > 0)   o.push(i - 1);
+  if (c < N-1) o.push(i + 1);
+  return o;
+}
+
+/* 双向连通 */
+function link(a, b) { adj[a].push(b); adj[b].push(a); }
+
+/**
+ * 生成迷宫
+ * 先用 DFS 回溯（显式栈）生成一棵生成树 —— 任意两格之间有且仅有一条通路；
+ * extra > 0 时再随机打通若干面墙，制造多条路线。
+ */
+function gen(extra) {
+  adj = Array.from({ length: N * N }, () => []);
+  const vis = new Uint8Array(N * N);
+  const st = [0];
+  vis[0] = 1;
+
+  while (st.length) {
+    const cur = st[st.length - 1];
+    const c = nbrs(cur).filter(x => !vis[x]);
+    if (c.length) {
+      const n = c[Math.random() * c.length | 0];
+      link(cur, n);
+      vis[n] = 1;
+      st.push(n);
+    } else {
+      st.pop();
+    }
+  }
+
+  for (let t = 0; extra > 0 && t < 800; t++) {
+    const a = Math.random() * N * N | 0;
+    const o = nbrs(a);
+    const b = o[Math.random() * o.length | 0];
+    if (!adj[a].includes(b)) { link(a, b); extra--; }
+  }
+}
+
+/**
+ * 枚举从 s 到 t 的所有简单路径（DFS 回溯），按长度升序返回。
+ * 最多收集 300 条，避免在开洞较多的迷宫里爆炸。
+ */
+function findRoutes(s, t) {
+  const res = [], path = [s];
+  const on = new Uint8Array(N * N);
+  on[s] = 1;
+
+  (function dfs(u) {
+    if (res.length >= 300) return;
+    if (u === t) { res.push(path.slice()); return; }
+    for (const v of adj[u]) {
+      if (!on[v]) {
+        on[v] = 1;
+        path.push(v);
+        dfs(v);
+        path.pop();
+        on[v] = 0;
+      }
+    }
+  })(s);
+
+  return res.sort((a, b) => a.length - b.length);
+}
+
+/* 单源 BFS，返回每格到 s 的最短步数（不可达为 -1） */
+function bfs(s) {
+  const d = new Int16Array(N * N).fill(-1);
+  const q = [s];
+  d[s] = 0;
+  for (let h = 0; h < q.length; h++) {
+    const u = q[h];
+    for (const v of adj[u]) {
+      if (d[v] < 0) { d[v] = d[u] + 1; q.push(v); }
+    }
+  }
+  return d;
+}
+
+/* ============================================================
+ * 2) 音频（WebAudio 程序化合成，无外部资源）
+ * ============================================================ */
+
+/* 首次交互时创建音频上下文：低频氛围底噪 + LFO 滤波扫动 */
+function audio() {
+  if (AC) return;
+  AC = new (window.AudioContext || window.webkitAudioContext)();
+  master = AC.createGain();
+  master.gain.value = muted ? 0 : .5;
+  master.connect(AC.destination);
+
+  const f = AC.createBiquadFilter(), g = AC.createGain();
+  const l = AC.createOscillator(), lg = AC.createGain();
+  f.type = 'lowpass';
+  f.frequency.value = 160;
+  g.gain.value = .07;
+  f.connect(g); g.connect(master);
+
+  for (const hz of [43, 43.7]) {          // 两个略微失谐的锯齿波制造「嗡鸣」
+    const o = AC.createOscillator();
+    o.type = 'sawtooth';
+    o.frequency.value = hz;
+    o.connect(f);
+    o.start();
+  }
+
+  l.frequency.value = .12;                 // LFO 缓慢扫动滤波截止频率
+  lg.gain.value = 60;
+  l.connect(lg); lg.connect(f.frequency);
+  l.start();
+}
+
+/* 单个音符：频率、时长、波形、音量、可选滑音终点 */
+function tone(fr, dur, type, vol, slide) {
+  if (!AC) return;
+  const n = AC.currentTime;
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(fr, n);
+  if (slide) o.frequency.exponentialRampToValueAtTime(slide, n + dur);
+  g.gain.setValueAtTime(vol, n);
+  g.gain.exponentialRampToValueAtTime(.0001, n + dur);
+  o.connect(g); g.connect(master);
+  o.start(); o.stop(n + dur);
+}
+
+const step  = () => tone(90 + Math.random() * 30, .07, 'triangle', .12, 50);       // 脚步
+const beat  = () => { tone(55, .12, 'sine', .5, 35); setTimeout(() => tone(48, .12, 'sine', .35, 30), 140); }; // 心跳
+const growl = () => tone(110, .5, 'sawtooth', .2, 40);                              // 怪物低吼
+
+/* ============================================================
+ * 3) 关卡构建
+ * ============================================================ */
+
+function build() {
+  /* --- 尺寸与画布 --- */
+  N = Math.min(11 + 2 * (lvl - 1), 19);
+  EXIT = N * N - 1;
+
+  const cssW = Math.min(innerWidth - 12, innerHeight - 220, 560);
+  size = Math.max(264, Math.floor(cssW / N) * N);
+  cs = size / N;
+  dpr = Math.min(devicePixelRatio || 1, 2);
+
+  cv.width = cv.height = size * dpr;
+  cv.style.width = cv.style.height = size + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  dk = document.createElement('canvas');
+  dk.width = dk.height = size * dpr;
+  dkx = dk.getContext('2d');
+  dkx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  /* --- 迷宫与视觉基底 --- */
+  gen(lvl === 1 ? 0 : Math.min(lvl + 1, 8));   // 第一关为完美迷宫，之后逐步开洞
+  tex = Array.from({ length: N * N }, Math.random);
+  seen = new Uint8Array(N * N);
+  seenP = new Path2D();
+
+  /* --- 玩家 --- */
+  pl = { c: 0, to: -1, t: 0, dur: .16 };       // c:当前格 to:目标格 t:插值进度 dur:单步时长
+
+  /* --- 怪物：初始只生成在离起点较远的区域 --- */
+  mons = [];
+  const nm = Math.min(2 + lvl, 7);
+  while (mons.length < nm) {
+    const i = Math.random() * N * N | 0;
+    if ((i / N | 0) + i % N >= N - 1 && i !== EXIT && !mons.some(m => m.c === i)) {
+      mons.push({ c: i, to: -1, t: 0, prev: -1, mode: 0, cd: Math.random() });
+    }
+  }
+
+  /* --- 背景浮尘 --- */
+  dust = Array.from({ length: 50 }, () => ({
+    x: Math.random() * size, y: Math.random() * size,
+    vx: (Math.random() - .5) * 6, vy: (Math.random() - .5) * 6
+  }));
+
+  /* --- 每关重置的运行时状态 --- */
+  parts = []; routes = []; routeT = 0;
+  steps = 0; time = 0; charges = 3;
+  shake = 0; dDisp = 0; danger = 0;
+  hp = hpKeep;
+  invT = shieldT = speedT = freezeT = hurt = 0;
+  items = [];
+
+  /* --- 随机撒道具 --- */
+  const ty = ['heal','heal','heal','shield','shield','speed','speed','freeze','scroll'];
+  while (items.length < Math.min(5 + (lvl >> 1), 8)) {
+    const i = Math.random() * N * N | 0;
+    if (i !== 0 && i !== EXIT && !items.some(o => o.c === i) && !mons.some(m => m.c === i)) {
+      items.push({ c: i, k: ty[Math.random() * ty.length | 0] });
+    }
+  }
+
+  /* --- 钥匙：要求离起点至少有 N 步，避免开局贴脸 --- */
+  hasKey = false;
+  const d0 = bfs(0);
+  let kc = 0, tr = 0;
+  do { kc = Math.random() * N * N | 0; }
+  while (tr++ < 800 && (
+    kc === 0 || kc === EXIT || d0[kc] < N ||
+    items.some(o => o.c === kc) || mons.some(m => m.c === kc)
+  ));
+  items.push({ c: kc, k: 'key' });
+
+  /* --- 地刺：只放在走廊拐点（度为 2 的格），避免堵死路口 --- */
+  traps = [];
+  for (let t2 = 0; t2 < 3000 && traps.length < Math.min(4 + lvl, 12); t2++) {
+    const i = Math.random() * N * N | 0;
+    if (i > N * 2 && i !== EXIT && i !== kc && adj[i].length === 2 &&
+        !items.some(o => o.c === i) && !traps.some(o => o.c === i)) {
+      traps.push({ c: i, ph: Math.random() * 2.4 });   // ph: 相位，让地刺节奏错开
+    }
+  }
+
+  paintMaze();
+  arrive();
+}
+
+/* 把静态迷宫（地砖 + 三层描边的墙）画到离屏画布，之后每帧直接贴图 */
+function paintMaze() {
+  mazeCv = document.createElement('canvas');
+  mazeCv.width = mazeCv.height = size * dpr;
+  const g = mazeCv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  /* 地砖：带随机明度/色相的暗色石块 */
+  for (let i = 0; i < N * N; i++) {
+    const x = i % N * cs, y = (i / N | 0) * cs;
+    g.fillStyle = `hsl(${28 + tex[i] * 10},${8 + tex[i] * 8}%,${17 + tex[i] * 7}%)`;
+    g.fillRect(x, y, cs + .5, cs + .5);
+    g.strokeStyle = 'rgba(0,0,0,.25)';
+    g.lineWidth = 1;
+    g.strokeRect(x + .5, y + .5, cs - 1, cs - 1);
+  }
+
+  /* 沿所有「不连通」的边描墙 */
+  const W = () => {
+    g.beginPath();
+    for (let i = 0; i < N * N; i++) {
+      const r = i / N | 0, c = i % N, x = c * cs, y = r * cs;
+      if (r === 0     || !adj[i].includes(i - N)) { g.moveTo(x, y);       g.lineTo(x + cs, y); }
+      if (c === 0     || !adj[i].includes(i - 1)) { g.moveTo(x, y);       g.lineTo(x, y + cs); }
+      if (r === N - 1)                            { g.moveTo(x, y + cs);  g.lineTo(x + cs, y + cs); }
+      if (c === N - 1)                            { g.moveTo(x + cs, y);  g.lineTo(x + cs, y + cs); }
+    }
+    g.stroke();
+  };
+
+  /* 三层描边：黑色外沿 → 深棕石体 → 亮色高光，形成立体感 */
+  g.lineCap = 'square';
+  g.strokeStyle = '#050507'; g.lineWidth = cs * .26;   W();
+  g.strokeStyle = '#5d4d3c'; g.lineWidth = cs * .10;   W();
+  g.strokeStyle = '#8a7357'; g.lineWidth = cs * .025;  W();
+}
+
+/**
+ * 玩家踏入新格时调用：
+ *  - 重算 BFS 距离
+ *  - 点亮三格以内的区域（只沿通道，不能穿墙）
+ *  - 拾取道具 / 判断是否到达出口
+ */
+function arrive() {
+  dist = bfs(pl.c);
+  litP = new Path2D();
+
+  for (let i = 0; i < N * N; i++) {
+    if (dist[i] >= 0 && dist[i] <= 3) {
+      litP.rect(i % N * cs - 1, (i / N | 0) * cs - 1, cs + 2, cs + 2);
+      if (!seen[i]) {
+        seen[i] = 1;
+        seenP.rect(i % N * cs, (i / N | 0) * cs, cs, cs);
+      }
+    }
+  }
+
+  /* 拾取道具 */
+  const ii = items.findIndex(o => o.c === pl.c);
+  if (ii >= 0) {
+    const o = items.splice(ii, 1)[0];
+    const a = IT[o.k];
+    const [x, y] = ctr(o.c);
+    burst(x, y, 24, '255,255,255', 90);
+    tone(520, .25, 'sine', .18, 980);
+    toast(a[2]);
+    if      (o.k === 'heal')   hp = Math.min(100, hp + 35);
+    else if (o.k === 'shield') shieldT = 6;
+    else if (o.k === 'speed')  speedT = 5;
+    else if (o.k === 'freeze') freezeT = 4;
+    else if (o.k === 'key')    hasKey = true;
+    else                       charges++;
+  }
+
+  /* 出口判定 */
+  if (pl.c === EXIT) {
+    if (hasKey) finish(true);
+    else toast('传送门被封印，先找到钥匙');
+  }
+}
+
+/* ============================================================
+ * 4) 游戏流程
+ * ============================================================ */
+
+/* 显示覆盖层；点击按钮时先解锁音频再执行回调 */
+function showOv(t, p, b, fn) {
+  $('ot').textContent = t;
+  $('op').textContent = p;
+  $('ob').textContent = b;
+  $('ob').onclick = () => { audio(); fn(); };
+  $('ov').style.display = 'flex';
+}
+
+function start() {
+  build();
+  state = 'play';
+  $('ov').style.display = 'none';
+}
+
+/* 通关 / 死亡结算 */
+function finish(w) {
+  if (state !== 'play') return;
+  state = w ? 'win' : 'dead';
+
+  const [x, y] = pos(pl);
+  burst(x, y, w ? 60 : 50, w ? '255,220,120' : '230,20,30', w ? 160 : 220);
+
+  /* 星级与最佳记录（仅胜利时） */
+  let stars = '', best = '';
+  if (w) {
+    const par = N * N * .35;
+    const st = 1 + (time < par) + (hp >= 70);
+    stars = '★'.repeat(st) + '☆'.repeat(3 - st);
+    try {
+      const k = 'mz' + lvl;
+      const b = +localStorage.getItem(k) || 1e9;
+      if (time < b) localStorage.setItem(k, time.toFixed(1));
+      best = ' · 最佳 ' + Math.min(b, time).toFixed(1) + ' 秒';
+    } catch (e) {}
+  }
+
+  if (w) {
+    [392, 494, 587, 784, 988].forEach((f, i) => setTimeout(() => tone(f, .5, 'triangle', .18), i * 110));
+  } else {
+    tone(60, 1, 'sawtooth', .5, 22);
+    shake = 1;
+  }
+
+  setTimeout(() => {
+    if (w) {
+      showOv(
+        '第 ' + lvl + ' 关完成',
+        stars + ' 用时 ' + time.toFixed(1) + ' 秒，走了 ' + steps + ' 步' + best +
+        '。下一关迷宫更大，怪物更多，生命回复 30 点。',
+        '下一关',
+        () => { lvl++; hpKeep = Math.min(100, hp + 30); start(); }
+      );
+    } else {
+      showOv('你被黑暗吞没了', '倒在第 ' + lvl + ' 关。', '重试本关',
+        () => { hpKeep = 100; start(); });
+    }
+  }, w ? 700 : 900);
+}
+
+/* 探路：消耗一次次数，枚举候选路线并在左下角列出前 3 条 */
+function scout() {
+  if (state !== 'play' || charges <= 0) return;
+  charges--;
+  routes = findRoutes(pl.c, EXIT);
+  routeT = 4;
+  tone(660, .3, 'sine', .15, 880);
+
+  const ul = $('rl');
+  ul.textContent = '';
+  routes.slice(0, 3).forEach((p, i) => {
+    const li = document.createElement('li');
+    li.textContent = '路线 ' + (i + 1) + ' · ' + (p.length - 1) + ' 步';
+    ul.appendChild(li);
+  });
+  if (routes.length > 3) {
+    const li = document.createElement('li');
+    li.textContent = '共 ' + routes.length + ' 条候选';
+    ul.appendChild(li);
+  }
+}
+
+/* 顶部浮层短提示 */
+function toast(s) { $('msg').textContent = s; msgT = 1.6; }
+
+/* 粒子爆发 */
+function burst(x, y, n, col, sp) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * 6.283;
+    const s = Math.random() * sp;
+    const l = .5 + Math.random();
+    parts.push({
+      x, y,
+      vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+      l, max: l, r: 1 + Math.random() * 2, col
+    });
+  }
+}
+
+/* ============================================================
+ * 5) 状态更新
+ * ============================================================ */
+
+/* 格索引 → 该格中心坐标 */
+const ctr = i => [(i % N + .5) * cs, ((i / N | 0) + .5) * cs];
+
+/* 实体当前位置：移动中用 smoothstep 在两格中心之间插值 */
+function pos(e) {
+  const a = ctr(e.c);
+  if (e.to < 0) return a;
+  const b = ctr(e.to);
+  const t = e.t * e.t * (3 - 2 * e.t);
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+}
+
+function update(dt) {
+  /* --- 粒子与浮尘（非游戏状态下也继续，让标题画面有生气） --- */
+  for (const p of parts) {
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.vx *= .98; p.vy *= .98;
+    p.l -= dt;
+  }
+  parts = parts.filter(p => p.l > 0);
+
+  for (const d of dust) {
+    d.x = (d.x + d.vx * dt + size) % size;
+    d.y = (d.y + d.vy * dt + size) % size;
+  }
+
+  /* --- 屏幕震动衰减、危险值平滑 --- */
+  shake = Math.max(0, shake - dt * 1.5);
+  dDisp += (danger - dDisp) * Math.min(1, dt * 4);
+
+  /* --- 探路路线显示倒计时 --- */
+  if (routeT > 0) {
+    routeT -= dt;
+    if (routeT <= 0) $('rl').textContent = '';
+  }
+
+  if (state !== 'play') return;
+
+  /* --- 各类计时器 --- */
+  time += dt;
+  invT -= dt; shieldT -= dt; speedT -= dt; freezeT -= dt;
+  hurt = Math.max(0, hurt - dt * 2);
+  pl.dur = speedT > 0 ? .1 : .16;      // 疾跑时单步时长更短
+
+  if (msgT > 0) {
+    msgT -= dt;
+    if (msgT <= 0) $('msg').textContent = '';
+  }
+
+  /* --- 玩家移动插值 --- */
+  if (pl.to >= 0) {
+    pl.t += dt / pl.dur;
+    /* 移动中留下拖尾火星 */
+    if (Math.random() < .5) {
+      const [x, y] = pos(pl);
+      parts.push({
+        x, y,
+        vx: (Math.random() - .5) * 10, vy: (Math.random() - .5) * 10,
+        l: .5, max: .5, r: 1.5, col: '255,190,110'
+      });
+    }
+    if (pl.t >= 1) {
+      pl.c = pl.to; pl.to = -1; pl.t = 0;
+      arrive();
+    }
+  }
+
+  if (state !== 'play') return;   // arrive 里可能触发通关
+
+  /* --- 处理方向输入：静止且有按键时才起步 --- */
+  if (pl.to < 0 && dirs.length) {
+    const [a, b] = D[dirs[dirs.length - 1]];
+    const r = (pl.c / N | 0) + a, c = pl.c % N + b;
+    if (r >= 0 && r < N && c >= 0 && c < N && adj[pl.c].includes(r * N + c)) {
+      pl.to = r * N + c;
+      pl.t = 0;
+      steps++;
+      step();
+    }
+  }
+
+  /* --- 怪物 AI --- */
+  const chaseDur = Math.max(.2, .34 - lvl * .015);
+  for (const m of mons) {
+    if (freezeT > 0) continue;                 // 全局冻结
+    if (m.stun > 0) { m.stun -= dt; continue; } // 被玩家撞晕
+
+    if (m.to >= 0) {
+      m.t += dt / m.dur;
+      if (m.t >= 1) { m.prev = m.c; m.c = m.to; m.to = -1; m.t = 0; }
+    }
+
+    if (m.to < 0) {
+      m.cd -= dt;
+      if (m.cd > 0) continue;
+
+      const d = dist[m.c];
+      const chase = d >= 0 && d <= 5;          // 5 步内进入追击
+      if (chase && !m.mode) growl();
+      m.mode = chase ? 1 : 0;
+
+      let nx;
+      if (chase) {
+        /* 沿 BFS 距离最陡下降方向（并列则随机选） */
+        let best = 1e9, o = [];
+        for (const v of adj[m.c]) {
+          if (dist[v] < best) { best = dist[v]; o = [v]; }
+          else if (dist[v] === best) o.push(v);
+        }
+        nx = o[Math.random() * o.length | 0];
+        m.dur = chaseDur;
+      } else {
+        /* 巡逻：尽量不走回头路 */
+        let o = adj[m.c].filter(v => v !== m.prev);
+        if (!o.length) o = adj[m.c];
+        nx = o[Math.random() * o.length | 0];
+        m.dur = .46;
+        m.cd = Math.random() < .25 ? .5 : 0;
+      }
+      m.to = nx;
+      m.t = 0;
+    }
+  }
+
+  /* --- 地刺与怪物碰撞检测 --- */
+  const [px, py] = pos(pl);
+  let dm = 99;   // 最近怪物的步数距离，用于危险值
+
+  for (const tr of traps) {
+    /* 周期 2.4 秒，前 1 秒为「升起」危险期 */
+    if ((time + tr.ph) % 2.4 < 1 && invT <= 0 && shieldT <= 0) {
+      const [tx, ty2] = ctr(tr.c);
+      if (Math.hypot(tx - px, ty2 - py) < cs * .35) {
+        hp -= 20;
+        invT = 1.2; hurt = 1; shake = .4;
+        burst(px, py, 16, '230,20,30', 120);
+        tone(140, .25, 'square', .25, 60);
+        toast('踩中地刺 -20');
+        if (hp <= 0) { hp = 0; finish(false); return; }
+      }
+    }
+  }
+
+  for (const m of mons) {
+    const [mx, my] = pos(m);
+    if (Math.hypot(mx - px, my - py) < cs * .5 &&
+        invT <= 0 && shieldT <= 0 && freezeT <= 0) {
+      hp -= 34;
+      invT = 1.6; hurt = 1; shake = .6;
+      m.stun = 1.2;                        // 撞到后怪物短暂僵直，给玩家脱身机会
+      burst(px, py, 22, '230,20,30', 160);
+      tone(80, .4, 'sawtooth', .4, 30);
+      if (hp <= 0) { hp = 0; finish(false); return; }
+    }
+    const d = dist[m.c];
+    if (d >= 0 && d < dm) dm = d;
+  }
+
+  /* --- 危险值与心跳音：怪物越近，心跳越快越响 --- */
+  danger = freezeT > 0 ? 0 : Math.max(0, Math.min(1, 1 - (dm - 1) / 7));
+  if (danger > .05) {
+    hbT -= dt;
+    if (hbT <= 0) {
+      beat();
+      hbT = 1.15 - .75 * danger;
+    }
+  }
+}
+
+/* ============================================================
+ * 6) 渲染
+ * ============================================================ */
+
+function render(t) {
+  /* 震动强度：受伤抖动 + 危险值平方带来的持续微颤 */
+  const sh = shake * 10 + dDisp * dDisp * 3;
+
+  ctx.save();
+  ctx.translate((Math.random() - .5) * sh, (Math.random() - .5) * sh);
+
+  /* 背景与迷宫底图 */
+  ctx.fillStyle = '#000';
+  ctx.fillRect(-20, -20, size + 40, size + 40);
+  ctx.drawImage(mazeCv, 0, 0, size, size);
+
+  /* 背景浮尘 */
+  ctx.fillStyle = 'rgba(255,210,150,.5)';
+  for (const d of dust) ctx.fillRect(d.x, d.y, 1.5, 1.5);
+
+  const [px, py] = pos(pl);
+  let g;
+
+  /* --- 地刺：底座 + 四根尖刺，高度随周期变化 --- */
+  for (const tr of traps) {
+    const [x, y] = ctr(tr.c);
+    const s = (time + tr.ph) % 2.4;
+    const h = s < 1 ? 1 : s > 1.9 ? .45 : .12;
+    ctx.fillStyle = '#120d0d';
+    ctx.fillRect(x - cs * .3, y - cs * .3, cs * .6, cs * .6);
+    ctx.fillStyle = s < 1 ? '#d33' : '#8a8a92';
+    for (let i = 0; i < 4; i++) {
+      const ax = x + (i % 2 - .5) * cs * .32;
+      const ay = y + ((i >> 1) - .5) * cs * .32;
+      ctx.beginPath();
+      ctx.moveTo(ax - cs * .07, ay + cs * .08);
+      ctx.lineTo(ax + cs * .07, ay + cs * .08);
+      ctx.lineTo(ax, ay + cs * .08 - cs * .2 * h);
+      ctx.fill();
+    }
+  }
+
+  /* --- 道具：发光圆点 + 图标字 --- */
+  for (const o of items) {
+    const [x, y] = ctr(o.c);
+    const b = Math.sin(t * 3 + o.c) * cs * .03;   // 上下浮动
+    const a = IT[o.k];
+    ctx.save();
+    ctx.shadowColor = a[0];
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = a[0];
+    ctx.globalAlpha = .9;
+    ctx.beginPath();
+    ctx.arc(x, y + b, cs * .17, 0, 7);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.fillStyle = '#04060a';
+    ctx.font = 'bold ' + (cs * .2 | 0) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(a[1], x, y + b + 1);
+  }
+
+  /* --- 怪物：径向渐变的黑色雾团（红眼在后面单独画） --- */
+  for (const m of mons) {
+    const [x, y] = pos(m);
+    const r = cs * (.3 + .02 * Math.sin(t * 6 + m.c));
+    g = ctx.createRadialGradient(x, y, 0, x, y, r * 1.5);
+    g.addColorStop(0, '#2a0509');
+    g.addColorStop(.7, '#0d0204');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, r * 1.5, 0, 7);
+    ctx.fill();
+  }
+
+  /* --- 玩家：光球（无敌时闪烁）+ 护盾环 --- */
+  if (state !== 'dead') {
+    ctx.globalAlpha = invT > 0 && Math.sin(t * 40) > 0 ? .35 : 1;
+    g = ctx.createRadialGradient(px, py, 0, px, py, cs * .3);
+    g.addColorStop(0, '#fff');
+    g.addColorStop(.4, '#ffd9a0');
+    g.addColorStop(1, 'rgba(255,170,80,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(px, py, cs * .3, 0, 7);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    if (shieldT > 0) {
+      ctx.strokeStyle = 'rgba(110,180,255,' + (.5 + .3 * Math.sin(t * 8)) + ')';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(px, py, cs * .38, 0, 7);
+      ctx.stroke();
+    }
+  }
+
+  /* --- 黑暗层 ---
+   * 先把整屏压暗；再用 destination-out 擦出：
+   *   1. 已探索区域的微弱余光
+   *   2. 玩家周围沿通道（clip 到 litP）的火把光圈
+   */
+  const R = cs * (3.3 + .12 * Math.sin(t * 13) + .07 * Math.sin(t * 5.3));
+  dkx.globalCompositeOperation = 'source-over';
+  dkx.fillStyle = 'rgba(1,2,6,.975)';
+  dkx.fillRect(0, 0, size, size);
+
+  dkx.globalCompositeOperation = 'destination-out';
+  dkx.globalAlpha = .24;
+  dkx.fill(seenP);
+  dkx.globalAlpha = 1;
+
+  dkx.save();
+  dkx.clip(litP);
+  g = dkx.createRadialGradient(px, py, cs * .2, px, py, R);
+  g.addColorStop(0, 'rgba(0,0,0,1)');
+  g.addColorStop(.5, 'rgba(0,0,0,.88)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  dkx.fillStyle = g;
+  dkx.fillRect(0, 0, size, size);
+  dkx.restore();
+
+  ctx.drawImage(dk, 0, 0, size, size);
+
+  /* 火把暖色光晕 */
+  ctx.save();
+  ctx.clip(litP);
+  ctx.globalCompositeOperation = 'lighter';
+  g = ctx.createRadialGradient(px, py, 0, px, py, R);
+  g.addColorStop(0, 'rgba(255,160,70,.22)');
+  g.addColorStop(1, 'rgba(255,120,40,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  ctx.restore();
+
+  /* --- 出口传送门：黑暗中也能看到的方向指引，拿到钥匙后变绿 --- */
+  const [ex, ey] = ctr(EXIT);
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  g = ctx.createRadialGradient(ex, ey, 0, ex, ey, cs * 1.1);
+  const pc = hasKey ? '90,255,190' : '255,90,70';
+  g.addColorStop(0, 'rgba(' + pc + ',' + (.55 + .15 * Math.sin(t * 3)) + ')');
+  g.addColorStop(1, 'rgba(' + pc + ',0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(ex - cs * 1.2, ey - cs * 1.2, cs * 2.4, cs * 2.4);
+
+  ctx.strokeStyle = hasKey ? 'rgba(160,255,220,.9)' : 'rgba(255,150,120,.9)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 3; i++) {
+    const a = t * (1.5 + i) + i;
+    ctx.beginPath();
+    ctx.arc(ex, ey, cs * (.14 + i * .07), a, a + 4);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  /* --- 怪物红眼：距离越近越清晰，远处只剩微光 --- */
+  ctx.save();
+  ctx.shadowColor = '#f22';
+  ctx.shadowBlur = 10;
+  for (const m of mons) {
+    const d = dist[m.c];
+    if (d < 0 || d > 8) continue;
+    const [x, y] = pos(m);
+    ctx.globalAlpha = d <= 3 ? 1 : Math.max(.15, 1 - d / 9);
+    ctx.fillStyle = freezeT > 0 ? '#8cf' : m.mode ? '#ff7a2a' : '#ff2a2a';
+    for (const o of [-1, 1]) {
+      ctx.beginPath();
+      ctx.arc(x + o * cs * .1, y - cs * .04, cs * .045, 0, 7);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+
+  /* --- 探路结果：最短路线高亮，其余半透明 --- */
+  if (routeT > 0) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, routeT);
+    ctx.lineJoin = 'round';
+    for (let k = routes.length - 1; k >= 0; k--) {
+      ctx.strokeStyle = k ? 'rgba(120,170,255,.35)' : '#7dffb0';
+      ctx.lineWidth = k ? 2 : 3.5;
+      ctx.shadowColor = k ? 'transparent' : '#3f9';
+      ctx.shadowBlur = k ? 0 : 12;
+      ctx.beginPath();
+      routes[k].forEach((n, j) => {
+        const [x, y] = ctr(n);
+        j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      });
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* --- 粒子 --- */
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const p of parts) {
+    ctx.fillStyle = 'rgba(' + p.col + ',' + Math.max(0, p.l / p.max) + ')';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, 7);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  ctx.restore();   // 结束震动变换
+
+  /* --- 屏幕后处理：暗角 / 危险红边 / 受伤红屏 --- */
+  g = ctx.createRadialGradient(size / 2, size / 2, size * .3, size / 2, size / 2, size * .78);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.75)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+
+  if (dDisp > .02) {
+    const pulse = .75 + .25 * Math.sin(t * (4 + dDisp * 8));
+    g = ctx.createRadialGradient(size / 2, size / 2, size * .3, size / 2, size / 2, size * .78);
+    g.addColorStop(0, 'rgba(160,0,10,0)');
+    g.addColorStop(1, 'rgba(170,0,15,' + (.6 * dDisp * pulse) + ')');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+  }
+
+  if (hurt > 0) {
+    ctx.fillStyle = 'rgba(200,0,0,' + hurt * .45 + ')';
+    ctx.fillRect(0, 0, size, size);
+  }
+}
+
+/* 同步顶部 HUD 文本与血条 */
+function hud() {
+  $('hpf').style.width = hp + '%';
+  $('hpt').textContent = hp;
+
+  const b = [];
+  if (shieldT > 0) b.push('🛡' + Math.ceil(shieldT));
+  if (speedT > 0)  b.push('⚡' + Math.ceil(speedT));
+  if (freezeT > 0) b.push('❄' + Math.ceil(freezeT));
+  if (hasKey)      b.push('🔑');
+  $('h3').textContent = b.join(' ');
+
+  $('h1').textContent = '第 ' + lvl + ' 关';
+  $('h2').textContent = steps + ' 步 · ' + time.toFixed(1) + ' 秒';
+  $('bs').textContent = '探路 R ×' + charges;
+}
+
+/* ============================================================
+ * 7) 输入
+ * ============================================================ */
+
+const K = {
+  ArrowUp:'u', w:'u', W:'u',
+  ArrowDown:'d', s:'d', S:'d',
+  ArrowLeft:'l', a:'l', A:'l',
+  ArrowRight:'r', d:'r', D:'r'
+};
+
+addEventListener('keydown', e => {
+  const k = K[e.key];
+  if (k) {
+    e.preventDefault();
+    if (!dirs.includes(k)) dirs.push(k);
+  } else if (e.key === 'r' || e.key === 'R') {
+    scout();
+  }
+});
+
+addEventListener('keyup', e => {
+  const k = K[e.key];
+  if (k) dirs = dirs.filter(x => x !== k);
+});
+
+/* 失焦时清空按键，避免「粘键」一直走 */
+addEventListener('blur', () => { dirs = []; });
+
+/* 触屏方向键 */
+document.querySelectorAll('#pad button').forEach(b => {
+  const k = b.dataset.k;
+  b.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    if (!dirs.includes(k)) dirs.push(k);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev =>
+    b.addEventListener(ev, () => { dirs = dirs.filter(x => x !== k); })
+  );
+});
+
+$('bs').onclick = scout;
+
+$('bm').onclick = () => {
+  muted = !muted;
+  if (master) master.gain.value = muted ? 0 : .5;
+  $('bm').textContent = muted ? '🔇' : '🔊';
+};
+
+/* ============================================================
+ * 8) 主循环
+ * ============================================================ */
+
+let last = 0;
+
+function loop(ts) {
+  const dt = Math.min((ts - last) / 1000, .05);   // 限制单帧步长，防止切后台后跳帧
+  last = ts;
+  update(dt);
+  render(ts / 1000);
+  hud();
+  requestAnimationFrame(loop);
+}
+
+build();
+showOv(
+  '暗影回廊',
+  '光只能照亮三步之内，红色的眼睛在黑暗里注视着你。先找到金色钥匙，再冲向传送门逃出去。被怪物碰到或踩中地刺会掉血，沿途拾取道具续命。方向键或 WASD 移动，R 键用 DFS 探路。',
+  '进入黑暗',
+  start
+);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
